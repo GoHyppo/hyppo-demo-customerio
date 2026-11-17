@@ -114,7 +114,10 @@ function setupUi() {
     const traits = { email: f.email.trim(), plan: f.plan };
     if (f.first_name) traits.first_name = f.first_name.trim();
     await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits);
-    await send('track("demo_identificado")', cioanalytics.track("demo_identificado"), "Dispara el banner para identificados");
+    // El banner lee nombre y plan del evento: si los leyera del perfil, a veces Customer.io
+    // arma el mensaje antes de guardar los atributos del identify y cae en los valores por defecto.
+    const props = { first_name: traits.first_name || "", plan: traits.plan };
+    await send('track("demo_identificado")', cioanalytics.track("demo_identificado", props), props);
     // Un inline ocupa su lugar hasta que se cierra: el banner nuevo entra al recargar la página.
     reloadIn(15, "Customer.io está armando tu banner");
   });
