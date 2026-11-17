@@ -14,7 +14,7 @@ Workspace: **186015** ("Hyppo", cuenta de clientes `126155`, US).
 |---|---|---|
 | 1 · Visitante anónimo | `page()` con un `anonymousId` | Banner inline naranja: broadcast anónimo 2 |
 | 2 · Identificarse | `identify(id, {email, first_name, plan})` + `track("demo_identificado")`, y recarga a los 15 s | Banner inline azul con nombre y plan: automation 18 |
-| 3 · Email → web → conversión | `track("demo_email_solicitado")` | Email desde `hello@hyppo.io` con un link que vuelve a la web (`?uid=…&producto=buzo-hyppo`): automation 19, objetivo de conversión `Order Completed` en 1 día |
+| 3 · Email → web → conversión | `track("demo_email_solicitado", {plan})` | Automation 19: rama por plan (free → email de la remera; pro y enterprise → Experiment 1 de asunto sobre el email del buzo). El link vuelve a la web con `?uid=…&producto=…`; conversión `Order Completed` en 1 día |
 | 4 · In-app | `track("demo_inapp")` | Modal: automation 17 |
 | 5 · Web push | Pendiente | Web push está en alpha; hay que pedirle a Customer.io que lo habilite |
 
@@ -46,7 +46,8 @@ llamada a `cioanalytics` y se conserva entre recargas de la misma pestaña.
 |---|---|---|
 | Broadcast anónimo "Demo web · banner anónimo" | 2 | Inline en `#cio-banner`, persistente, regla de página `/hyppo-demo-customerio`, objetivo: que se identifique |
 | Automation "Demo web · banner identificado" | 18 | Trigger `demo_identificado` (con `first_name` y `plan` como propiedades), in-app inline en `#cio-banner`, no persistente |
-| Automation "Demo web · email que vuelve a la web" | 19 | Trigger `demo_email_solicitado`, email de Design Studio, conversión `Order Completed` en 1 día |
+| Automation "Demo web · email por plan con test de asunto" | 19 | Trigger `demo_email_solicitado`; rama True/False sobre la propiedad `plan` del evento; emails de Design Studio; conversión `Order Completed` en 1 día |
+| Experiment "Demo web · asunto del email del buzo" | 1 | 50/50 entre dos asuntos, conversión `Order Completed` en 1 día, ganador manual |
 | Automation "Demo web · in-app" | 17 | Trigger `demo_inapp`, in-app modal |
 
 Lo que no es obvio:

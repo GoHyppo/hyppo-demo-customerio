@@ -29,7 +29,7 @@
   </div>
 
   <div id="from-email" class="callout" hidden>
-    <strong>Llegaste desde el email.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Comprá el buzo y mirá la conversión en la automation.
+    <strong>Llegaste desde el email.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Comprá el producto destacado y mirá la conversión en la automation.
   </div>
 
   <main>
@@ -82,18 +82,21 @@
 
     <section class="card step wide" id="paso-3">
       <p class="caps">Paso 3 · Email → web → conversión</p>
-      <h2>Un email que te trae de vuelta</h2>
-      <p>Pedí el email: te llega a la casilla del paso 2. El botón del mail vuelve a esta página ya identificado y con el buzo destacado. Si lo comprás, Customer.io lo cuenta como conversión de la automation.</p>
+      <h2>Un email distinto según el plan</h2>
+      <p>Pedí el email: te llega a la casilla del paso 2. La automation elige el contenido según tu plan: a free le ofrece la remera; a pro y enterprise, el buzo, con dos asuntos distintos en un test A/B. El botón del mail vuelve a esta página ya identificado y con el producto destacado. Si lo comprás, cuenta como conversión.</p>
       <div class="row">
         <button id="btn-email">Mandame el email</button>
         <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation y sus conversiones ↗</a>
+        <a class="btn ghost" data-link="experimento" target="_blank" rel="noopener">Ver el test A/B ↗</a>
       </div>
       <p id="email-hint" class="muted"></p>
       <div class="products" id="products"></div>
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
-          <li>El evento <code>demo_email_solicitado</code> dispara una automation con un email armado en Design Studio, desde <code>hello@hyppo.io</code>.</li>
+          <li>El evento <code>demo_email_solicitado</code> lleva el plan como propiedad. La automation tiene una rama True/False sobre ese dato (<code>plan = free</code>): free recibe el email de la remera; el resto pasa por un <em>Experiment</em> que reparte 50/50 entre dos asuntos del email del buzo.</li>
+          <li>El Experiment mide como conversión <code>Order Completed</code> dentro de 1 día y la decisión del ganador es manual. Customer.io reemplazó los A/B clásicos de automation por Experiments.</li>
+          <li>Los emails están armados en Design Studio y salen desde <code>hello@hyppo.io</code>.</li>
           <li>El link del mail lleva <code>?uid={{customer.id}}</code> y UTMs. Al llegar, la web hace <code>identify(uid)</code>, así el navegador queda asociado a la persona aunque sea otro dispositivo.</li>
           <li>La automation tiene como objetivo de conversión el evento <code>Order Completed</code> dentro de 1 día de recibir el mail.</li>
           <li>Customer.io trackea aperturas y clics del mail por su cuenta: se ven en las métricas del email.</li>

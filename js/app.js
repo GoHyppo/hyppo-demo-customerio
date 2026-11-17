@@ -134,8 +134,11 @@ function setupUi() {
       $("#email-hint").textContent = "Primero identificate con tu email en el paso 2.";
       return;
     }
-    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado"), { email });
-    $("#email-hint").textContent = `Listo: en uno o dos minutos llega a ${email}. Abrilo y tocá "Ver el buzo Hyppo".`;
+    // El plan viaja en el evento: la automation elige la rama con él (free → remera; pro y enterprise → buzo con test de asunto).
+    const plan = cioanalytics.user().traits()?.plan || "free";
+    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado", { plan }), { email, plan });
+    const producto = plan === "free" ? "la remera" : "el buzo";
+    $("#email-hint").textContent = `Listo: en uno o dos minutos llega a ${email}. Con el plan ${plan}, el email ofrece ${producto}.`;
   });
 
   $("#products").addEventListener("click", (e) => {

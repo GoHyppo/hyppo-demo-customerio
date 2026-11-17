@@ -11,6 +11,7 @@ window.CIO_CONFIG = {
     bannerAnonimo: "https://fly.customer.io/workspaces/186015/journeys/anonymous/2",
     bannerIdentificado: "https://fly.customer.io/workspaces/186015/journeys/automations/18",
     email: "https://fly.customer.io/workspaces/186015/journeys/automations/19",
+    experimento: "https://fly.customer.io/workspaces/186015/experiments/1",
     inapp: "https://fly.customer.io/workspaces/186015/journeys/automations/17",
   },
 
