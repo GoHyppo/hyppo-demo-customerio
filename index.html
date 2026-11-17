@@ -12,111 +12,134 @@
   <header class="top">
     <img src="assets/isotipo.png" alt="Hyppo" class="logo">
     <div>
-      <p class="caps">Hyppo · Demo interna</p>
-      <h1>Customer.io JavaScript</h1>
+      <p class="caps">Hyppo · Demo en vivo</p>
+      <h1>Customer.io en tu web</h1>
     </div>
-    <div id="status" class="status">Cargando…</div>
+    <div class="top-right">
+      <a class="btn ghost small-btn" href="guia.html" target="_blank" rel="noopener">Guía para presentar ↗</a>
+      <label class="switch"><input type="checkbox" id="toggle-notes"> Notas técnicas</label>
+      <div id="status" class="status">Cargando…</div>
+    </div>
   </header>
 
+  <!-- Posición de los banners inline: Customer.io reemplaza el contenido de este div. -->
+  <div class="banner-wrap">
+    <div id="cio-banner"></div>
+    <p class="banner-hint muted">Acá aparece el banner que manda Customer.io: uno para visitantes anónimos y otro para personas identificadas.</p>
+  </div>
+
+  <div id="from-email" class="callout" hidden>
+    <strong>Llegaste desde el email.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Comprá el buzo y mirá la conversión en la automation.
+  </div>
+
   <main>
-    <section class="card" id="identidad">
-      <p class="caps">01 · Identidad</p>
-      <h2>Identificar a la persona</h2>
+    <section class="card step" id="paso-1">
+      <p class="caps">Paso 1 · Visitante anónimo</p>
+      <h2>Customer.io ya te está viendo</h2>
+      <p>Apenas entrás, el snippet registra un page view con un <code>anonymousId</code>. Sin saber quién sos, ya puede mostrarte un mensaje: es el banner naranja de arriba.</p>
+      <p class="muted">Ahora: <span id="who" class="pill">anónimo</span> · anonymousId <code id="anon-id">—</code></p>
+      <div class="row">
+        <a class="btn ghost" data-link="bannerAnonimo" target="_blank" rel="noopener">Ver el banner anónimo en Customer.io ↗</a>
+      </div>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
+        <ul>
+          <li>Es un <em>anonymous in-app broadcast</em> con display <em>inline</em> en el elemento <code>#cio-banner</code> y una regla de página <code>/hyppo-demo-customerio</code>. Requiere plan Premium o Enterprise.</li>
+          <li>El snippet tiene que cargar el plugin de in-app con <code>anonymousInApp: true</code>.</li>
+          <li>Su objetivo de conversión es que el visitante se identifique: se ve en las métricas del broadcast.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="card step" id="paso-2">
+      <p class="caps">Paso 2 · Identificarse</p>
+      <h2>Login o registro</h2>
       <form id="form-user">
-        <label>ID (userId) <input name="user_id" required placeholder="demo-tomas-1"></label>
-        <label>Email <input name="email" type="email" placeholder="nombre@hyppo.io"></label>
-        <label>Nombre <input name="first_name" placeholder="Tomás"></label>
-        <label>Plan (atributo)
-          <select name="plan"><option>free</option><option>pro</option><option>enterprise</option></select>
+        <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="nombre@empresa.com"></label>
+        <label>Nombre <input name="first_name" placeholder="Juan"></label>
+        <label>Plan
+          <select name="plan"><option>free</option><option selected>pro</option><option>enterprise</option></select>
         </label>
         <div class="row">
-          <button type="submit">Identificar</button>
-          <button type="button" id="btn-logout" class="ghost">Cerrar sesión (reset)</button>
+          <button type="submit">Identificarme</button>
+          <button type="button" id="btn-logout" class="ghost">Cerrar sesión</button>
         </div>
       </form>
-      <p class="muted">Persona actual: <code id="current-user">anónima</code> · anonymousId: <code id="anon-id">—</code></p>
-      <details>
-        <summary>Particularidades</summary>
+      <p class="muted">Al identificarte, el banner cambia por uno con tu nombre y tu plan.</p>
+      <div class="row">
+        <a class="btn ghost" id="link-profile" target="_blank" rel="noopener" hidden>Ver tu perfil en Customer.io ↗</a>
+        <a class="btn ghost" data-link="bannerIdentificado" target="_blank" rel="noopener">Ver el banner identificado ↗</a>
+      </div>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
         <ul>
-          <li><code>identify(id, traits)</code> crea o actualiza el perfil en People. Los traits son atributos del perfil: <code>email</code>, <code>first_name</code> y cualquier otro.</li>
-          <li>Lo que la persona hizo como anónima (con el <code>anonymousId</code>) se asocia al perfil cuando se identifica en el mismo navegador.</li>
-          <li>Si el workspace identifica por email, se puede usar el email como ID; conviene un ID estable de la base del cliente y el email como atributo.</li>
-          <li><code>reset()</code> borra el usuario y genera un <code>anonymousId</code> nuevo: es el logout.</li>
-          <li>Para encontrarla: People → buscar por ID o email. La actividad está en la pestaña Activity del perfil.</li>
+          <li><code>identify(id, {email, first_name, plan})</code> crea o actualiza el perfil. Lo que hiciste como anónimo se suma al perfil.</li>
+          <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{customer.first_name}}</code> y <code>{{customer.plan}}</code>).</li>
+          <li>"Cerrar sesión" es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo.</li>
         </ul>
       </details>
     </section>
 
-    <section class="card" id="eventos">
-      <p class="caps">02 · Eventos</p>
-      <h2>Eventos (track)</h2>
-      <form id="form-event" class="row">
-        <input name="name" value="demo_boton_clickeado" required>
-        <button type="submit">Enviar evento</button>
-      </form>
-      <button id="btn-page" class="ghost small">Registrar page view</button>
-      <details>
-        <summary>Particularidades</summary>
-        <ul>
-          <li><code>track(nombre, propiedades)</code>. Las propiedades se usan en Liquid como <code>{{event.&lt;propiedad&gt;}}</code> dentro de una automation disparada por el evento.</li>
-          <li>Un evento de una persona anónima queda en el <code>anonymousId</code> y se le asigna al perfil cuando se identifica.</li>
-          <li><code>page()</code> manda un page view. El snippet lo llama solo al cargar; las in-app con page rules lo usan para saber dónde está la persona.</li>
-          <li>Los bloqueadores de anuncios (Brave Shields, uBlock) bloquean <code>cdp.customer.io</code>. En un cliente real, los eventos clave conviene mandarlos también desde el backend por la HTTP API (ver <code>scripts/seed.sh</code>).</li>
-          <li>Para verlos: Data &amp; Integrations → JavaScript → Data In (llegada en vivo) y la Activity del perfil.</li>
-        </ul>
-      </details>
-    </section>
-
-    <section class="card wide" id="tienda">
-      <p class="caps">03 · Tienda</p>
-      <h2>Carrito y compras</h2>
+    <section class="card step wide" id="paso-3">
+      <p class="caps">Paso 3 · Email → web → conversión</p>
+      <h2>Un email que te trae de vuelta</h2>
+      <p>Pedí el email: te llega a la casilla del paso 2. El botón del mail vuelve a esta página ya identificado y con el buzo destacado. Si lo comprás, Customer.io lo cuenta como conversión de la automation.</p>
+      <div class="row">
+        <button id="btn-email">Mandame el email</button>
+        <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation y sus conversiones ↗</a>
+      </div>
+      <p id="email-hint" class="muted"></p>
       <div class="products" id="products"></div>
-      <details>
-        <summary>Particularidades</summary>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
         <ul>
-          <li>Customer.io no tiene una llamada aparte para compras: son eventos. La demo usa los nombres de la spec de ecommerce (<code>Product Added</code>, <code>Order Completed</code>), que reconocen los destinos de Data Pipelines.</li>
-          <li><code>Order Completed</code> con <code>revenue</code> sirve para medir conversiones de una automation (Conversion goal).</li>
-          <li>Para un carrito abandonado: automation con trigger <code>Product Added</code> y exit condition <code>Order Completed</code>.</li>
+          <li>El evento <code>demo_email_solicitado</code> dispara una automation con un email armado en Design Studio, desde <code>hello@hyppo.io</code>.</li>
+          <li>El link del mail lleva <code>?uid={{customer.id}}</code> y UTMs. Al llegar, la web hace <code>identify(uid)</code>, así el navegador queda asociado a la persona aunque sea otro dispositivo.</li>
+          <li>La automation tiene como objetivo de conversión el evento <code>Order Completed</code> dentro de 1 día de recibir el mail.</li>
+          <li>Customer.io trackea aperturas y clics del mail por su cuenta: se ven en las métricas del email.</li>
         </ul>
       </details>
     </section>
 
-    <section class="card" id="inapp">
-      <p class="caps">04 · In-app messages</p>
-      <h2>Disparar un in-app</h2>
-      <button id="btn-inapp">Disparar <code>demo_inapp</code></button>
-      <details>
-        <summary>Particularidades</summary>
+    <section class="card step" id="paso-4">
+      <p class="caps">Paso 4 · In-app</p>
+      <h2>Un mensaje sobre la web</h2>
+      <p>Hacé algo en la web y Customer.io responde en el momento con un modal.</p>
+      <div class="row">
+        <button id="btn-inapp">Disparar el in-app</button>
+        <a class="btn ghost" data-link="inapp" target="_blank" rel="noopener">Ver la automation ↗</a>
+      </div>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
         <ul>
-          <li>Primero se habilita in-app en Workspace Settings → In-App. Con eso el snippet carga el plugin solo; con una key <code>pk_</code> no hace falta el Site ID.</li>
-          <li>Para probar: automation con trigger "Performed event <code>demo_inapp</code>" y un mensaje In-App. Solo llega a personas identificadas (salvo que se active <code>anonymousInApp</code>).</li>
-          <li>Al principio el plugin consulta despacio, cerca de una vez por minuto. Después del primer mensaje pasa a tiempo real.</li>
-          <li>Los eventos del mensaje (abierto, cerrado, acción) aparecen en el log.</li>
+          <li>El botón manda el evento <code>demo_inapp</code>; una automation responde con un in-app modal.</li>
+          <li>El plugin consulta despacio (cerca de una vez por minuto) hasta el primer mensaje; después pasa a tiempo real. Para la reunión conviene haberlo disparado una vez antes.</li>
         </ul>
       </details>
     </section>
 
-    <section class="card" id="objetos">
-      <p class="caps">05 · Objetos</p>
-      <h2>Empresa (group)</h2>
-      <form id="form-group">
-        <label>ID de la empresa <input name="group_id" value="hyppo" required></label>
-        <label>Nombre <input name="name" value="Hyppo"></label>
-        <button type="submit">Asociar a la empresa</button>
-      </form>
-      <details>
-        <summary>Particularidades</summary>
+    <section class="card step" id="paso-5">
+      <p class="caps">Paso 5 · Web push</p>
+      <h2>Una notificación en el navegador</h2>
+      <p>Activás las notificaciones, pedís un push y al tocarlo te lleva a sus métricas en Customer.io.</p>
+      <div class="row">
+        <button id="btn-push-on" disabled>Activar notificaciones</button>
+        <button id="btn-push" disabled>Mandame un push</button>
+      </div>
+      <p id="push-hint" class="muted">Web push está en alpha: falta que Customer.io lo habilite en el workspace.</p>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
         <ul>
-          <li><code>group(id, traits)</code> crea un objeto y lo relaciona con la persona identificada. Sirve para modelos B2B (una cuenta con varias personas) o para cursos, vuelos, etc.</li>
-          <li>El tipo de objeto va en <code>traits.object_type_id</code> (por defecto <code>1</code>, el primero que se creó en Data Index → Objects). Si el workspace no tiene tipos de objeto, el llamado no crea nada.</li>
-          <li>Hay que identificar a la persona antes: sin <code>userId</code> no hay relación.</li>
+          <li>Web push usa el plugin <code>webPushPlugin.js</code> con la public key (VAPID) del workspace y un service worker servido desde este dominio (<code>cio-webpush-sw.js</code>).</li>
+          <li>Solo se puede pedir permiso a personas identificadas, y siempre desde un clic.</li>
+          <li>El link del push apunta a la página de métricas de ese mismo push en Customer.io.</li>
         </ul>
       </details>
     </section>
   </main>
 
   <aside class="log">
-    <div class="log-head"><span class="caps">Log de cioanalytics</span><button id="btn-clear" class="ghost small">Limpiar</button></div>
+    <div class="log-head"><span class="caps">Lo que la web le manda a Customer.io</span><button id="btn-clear" class="ghost small">Limpiar</button></div>
     <ol id="log"></ol>
   </aside>
 

@@ -21,7 +21,7 @@ function loadSnippet(writeKey, options) {
   var i = "cioanalytics", analytics = (window[i] = window[i] || []);
   if (analytics.initialize || analytics.invoked) return;
   analytics.invoked = !0;
-  analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on", "addSourceMiddleware", "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware"];
+  analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on", "addSourceMiddleware", "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware", "register"];
   analytics.factory = function (e) { return function () { var t = Array.prototype.slice.call(arguments); t.unshift(e); analytics.push(t); return analytics; }; };
   for (var e = 0; e < analytics.methods.length; e++) { var key = analytics.methods[e]; analytics[key] = analytics.factory(key); }
   analytics.load = function (key, e) {
@@ -35,50 +35,62 @@ function loadSnippet(writeKey, options) {
   analytics.load(writeKey, options);
 }
 
+// El log sobrevive a las recargas de la demo (solo en esta pestaña).
+const LOG_KEY = "cio-demo-log";
+function saveLog() {
+  try { sessionStorage.setItem(LOG_KEY, $("#log").innerHTML); } catch (e) { /* sin storage, se pierde el log */ }
+}
+function restoreLog() {
+  try { $("#log").innerHTML = sessionStorage.getItem(LOG_KEY) || ""; } catch (e) { /* idem */ }
+}
+
+function reloadIn(secs, reason) {
+  const status = $("#status");
+  status.classList.remove("ok");
+  const tick = () => {
+    if (secs <= 0) { saveLog(); location.reload(); return; }
+    status.textContent = `${reason}… recargo en ${secs} s`;
+    secs -= 1;
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+function currentUserId() {
+  return cioanalytics.user?.().id() || null;
+}
+
+// Link a la lista de People filtrada por el id: el formato documentado de Customer.io
+// (filtro JSON → URL-escape → base64 → URL-escape). Lleva a una sola fila, la de esta persona.
+function profileUrl(id) {
+  const filter = JSON.stringify({ and: [{ attribute: { field: "id", operator: "eq", value: id } }] });
+  return `${cfg.links.people}?filters=${encodeURIComponent(btoa(encodeURIComponent(filter)))}`;
+}
+
 function refreshUserInfo() {
   const user = cioanalytics.user?.();
   if (!user) return;
-  $("#current-user").textContent = user.id() || "anónima";
+  const id = user.id();
+  const profile = $("#link-profile");
+  profile.hidden = !id;
+  if (id) profile.href = profileUrl(id);
+  $("#who").textContent = id ? `identificado: ${user.traits()?.email || id}` : "anónimo";
+  $("#who").classList.toggle("ok", Boolean(id));
   $("#anon-id").textContent = user.anonymousId() || "—";
 }
 
-// Cada llamada devuelve una promesa con el contexto; si falla (bloqueador, key mala), lo marca en el log.
+// Cada llamada devuelve una promesa; si falla (bloqueador, key mala), lo marca en el log.
 function send(label, promise, detail) {
   log(label, detail);
-  Promise.resolve(promise)
+  return Promise.resolve(promise)
     .then(() => refreshUserInfo())
     .catch((err) => log(`${label}: ERROR`, String(err), "err"));
 }
 
-function setupUi() {
-  $("#form-user").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.target));
-    const traits = { plan: f.plan };
-    if (f.email) traits.email = f.email;
-    if (f.first_name) traits.first_name = f.first_name;
-    send(`identify("${f.user_id}")`, cioanalytics.identify(f.user_id, traits), traits);
-  });
-
-  $("#btn-logout").addEventListener("click", () => {
-    cioanalytics.reset();
-    log("reset", "Persona anónima con un anonymousId nuevo");
-    refreshUserInfo();
-  });
-
-  $("#form-event").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name = new FormData(e.target).get("name");
-    const props = { seccion: "eventos", origen: "demo-customerio" };
-    send(`track("${name}")`, cioanalytics.track(name, props), props);
-  });
-
-  $("#btn-page").addEventListener("click", () => {
-    send("page()", cioanalytics.page(), { path: location.pathname });
-  });
-
+function renderProducts(highlight) {
   $("#products").innerHTML = PRODUCTS.map((p) => `
-    <div class="product">
+    <div class="product${p.id === highlight ? " highlight" : ""}" id="prod-${p.id}">
+      ${p.id === highlight ? '<span class="tag">Del email</span>' : ""}
       <div class="thumb">${p.name.split(" ")[0]}</div>
       <strong>${p.name}</strong>
       <span class="muted">USD ${p.price}</span>
@@ -87,6 +99,41 @@ function setupUi() {
         <button class="small" data-buy="${p.id}">Comprar</button>
       </div>
     </div>`).join("");
+}
+
+function setupUi() {
+  document.querySelectorAll("[data-link]").forEach((a) => { a.href = cfg.links[a.dataset.link]; });
+
+  $("#toggle-notes").addEventListener("change", (e) => document.body.classList.toggle("show-notes", e.target.checked));
+
+  $("#form-user").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    // ID estable por persona: el mismo email da el mismo perfil en cada demo.
+    const id = "demo-" + f.email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const traits = { email: f.email.trim(), plan: f.plan };
+    if (f.first_name) traits.first_name = f.first_name.trim();
+    await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits);
+    await send('track("demo_identificado")', cioanalytics.track("demo_identificado"), "Dispara el banner para identificados");
+    // Un inline ocupa su lugar hasta que se cierra: el banner nuevo entra al recargar la página.
+    reloadIn(15, "Customer.io está armando tu banner");
+  });
+
+  $("#btn-logout").addEventListener("click", () => {
+    cioanalytics.reset();
+    log("reset", "Vuelve a ser un visitante anónimo");
+    reloadIn(1, "Cerrando sesión");
+  });
+
+  $("#btn-email").addEventListener("click", () => {
+    const email = cioanalytics.user?.().traits()?.email;
+    if (!currentUserId() || !email) {
+      $("#email-hint").textContent = "Primero identificate con tu email en el paso 2.";
+      return;
+    }
+    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado"), { email });
+    $("#email-hint").textContent = `Listo: en uno o dos minutos llega a ${email}. Abrilo y tocá "Ver el buzo Hyppo".`;
+  });
 
   $("#products").addEventListener("click", (e) => {
     const cartId = e.target.dataset.cart;
@@ -96,42 +143,47 @@ function setupUi() {
     const product = { product_id: p.id, name: p.name, price: p.price, quantity: 1 };
     if (cartId) {
       send('track("Product Added")', cioanalytics.track("Product Added", product), product);
-    } else {
-      const order = { order_id: `demo-${Date.now()}`, revenue: p.price, currency: "USD", products: [product] };
-      send('track("Order Completed")', cioanalytics.track("Order Completed", order), order);
+      return;
     }
+    const order = { order_id: `demo-${Date.now()}`, revenue: p.price, currency: "USD", products: [product] };
+    send('track("Order Completed")', cioanalytics.track("Order Completed", order), order);
+    e.target.textContent = "Comprado ✓";
   });
 
   $("#btn-inapp").addEventListener("click", () => {
-    send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "Si hay una automation con ese trigger, el in-app aparece en unos segundos");
+    send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "La automation responde con un modal en unos segundos");
   });
 
-  $("#form-group").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(e.target));
-    const traits = { name: f.name, object_type_id: "1" };
-    send(`group("${f.group_id}")`, cioanalytics.group(f.group_id, traits), traits);
-  });
-
-  $("#btn-clear").addEventListener("click", () => { $("#log").innerHTML = ""; });
+  $("#btn-clear").addEventListener("click", () => { $("#log").innerHTML = ""; saveLog(); });
 }
 
-function inAppEvents(e) {
-  log(`in-app: ${e.type.replace("in-app:", "")}`, e.detail?.messageId ? { messageId: e.detail.messageId } : "");
+// Si la persona llega desde el link del email (?uid=…), la identificamos y destacamos el producto.
+function handleEmailLanding() {
+  const params = new URLSearchParams(location.search);
+  const uid = params.get("uid");
+  const producto = params.get("producto");
+  renderProducts(uid ? producto : null);
+  if (!uid) return;
+  send(`identify("${uid}")`, cioanalytics.identify(uid), { origen: "link del email", utm_campaign: params.get("utm_campaign") });
+  $("#from-email-id").textContent = uid;
+  $("#from-email").hidden = false;
+  history.replaceState(null, "", location.pathname);
+  setTimeout(() => document.getElementById(`prod-${producto}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 400);
 }
 
 function init() {
-  if (!cfg.writeKey) {
-    $("#status").textContent = "Falta writeKey en js/config.js";
-    $("#status").classList.add("err");
-    return;
-  }
-
   loadSnippet(cfg.writeKey, {
-    integrations: { "Customer.io In-App Plugin": { events: inAppEvents } },
+    integrations: {
+      "Customer.io In-App Plugin": {
+        anonymousInApp: true, // el banner del paso 1 es para visitantes sin identificar
+        events: (e) => log(`in-app: ${e.type.replace("in-app:", "")}`),
+      },
+    },
   });
   cioanalytics.page();
+  restoreLog();
   setupUi();
+  handleEmailLanding();
 
   // Si analytics.min.js no carga en unos segundos, casi siempre es un bloqueador de anuncios.
   const blocked = setTimeout(() => {
@@ -142,9 +194,9 @@ function init() {
 
   cioanalytics.ready(() => {
     clearTimeout(blocked);
-    $("#status").textContent = `Conectado · workspace ${cfg.workspaceId}`;
+    $("#status").textContent = "Conectado a Customer.io";
     $("#status").classList.add("ok");
-    log("ready", { writeKey: `${cfg.writeKey.slice(0, 12)}…` });
+    log("ready", { workspace: cfg.workspaceId });
     refreshUserInfo();
   });
 }

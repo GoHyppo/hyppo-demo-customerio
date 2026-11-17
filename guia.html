@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hyppo · Guía de la demo Customer.io</title>
+  <link rel="icon" href="assets/isotipo.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="guide">
+  <header class="top">
+    <img src="assets/isotipo.png" alt="Hyppo" class="logo">
+    <div>
+      <p class="caps">Hyppo · Guía para presentar</p>
+      <h1>Demo de Customer.io, paso a paso</h1>
+    </div>
+    <div class="top-right">
+      <a class="btn" href="./">Abrir la demo</a>
+    </div>
+  </header>
+
+  <main class="guide-main">
+    <section class="card">
+      <h2>Antes de la reunión</h2>
+      <ol>
+        <li>Abrí la demo en el navegador que vas a compartir y <strong>bajá el bloqueador de anuncios</strong> para el sitio (Brave Shields, uBlock). Si está activo, arriba a la derecha dice "Bloqueado".</li>
+        <li><strong>Hacé el recorrido una vez con tu email.</strong> El in-app tarda hasta un minuto en llegar la primera vez a cada navegador; después es instantáneo.</li>
+        <li>Tocá <strong>Cerrar sesión</strong> en el paso 2 para arrancar la reunión como visitante anónimo.</li>
+        <li>Dejá Customer.io abierto y logueado en otra pestaña: los links "↗" de cada paso abren ahí.</li>
+        <li>Tené a mano tu casilla de email para el paso 3.</li>
+      </ol>
+      <p class="muted">La demo usa el workspace "Hyppo" (186015). Todo lo que pase en la reunión queda en ese workspace, con perfiles <code>demo-…</code>.</p>
+    </section>
+
+    <section class="card">
+      <p class="caps">Paso 1 · Visitante anónimo</p>
+      <h2>"Customer.io te reconoce antes de saber quién sos"</h2>
+      <figure><img src="assets/guia/1-anonimo.png" alt="Banner naranja para visitantes anónimos arriba de la demo"></figure>
+      <dl>
+        <dt>Qué decir</dt>
+        <dd>Apenas alguien entra a la web, Customer.io le asigna un ID anónimo y ya puede mostrarle mensajes. Este banner lo ve cualquier visitante, sin login.</dd>
+        <dt>Qué hacer</dt>
+        <dd>Señalá el banner naranja y el panel negro de la derecha: el page view ya salió.</dd>
+        <dt>Qué mostrar en Customer.io</dt>
+        <dd>"Ver el banner anónimo ↗": el broadcast, sus vistas y su conversión (que el visitante se identifique).</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <p class="caps">Paso 2 · Identificarse</p>
+      <h2>"Cuando se registra, el mensaje cambia solo"</h2>
+      <figure><img src="assets/guia/2-identificado.png" alt="Banner azul con el nombre y el plan de la persona identificada"></figure>
+      <dl>
+        <dt>Qué decir</dt>
+        <dd>Al loguearse, todo lo que hizo como anónimo pasa a su perfil. El banner se arma con sus datos: si cambia el plan, cambia el mensaje.</dd>
+        <dt>Qué hacer</dt>
+        <dd>Completá email, nombre y plan y tocá "Identificarme". La página avisa y se recarga en 15 segundos con el banner azul.</dd>
+        <dt>Qué mostrar en Customer.io</dt>
+        <dd>"Ver tu perfil ↗": el perfil recién creado, con los atributos y la actividad de antes de identificarse.</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <p class="caps">Paso 3 · Email → web → conversión</p>
+      <h2>"Un email que trae ventas y se puede medir"</h2>
+      <figure><img src="assets/guia/3-email.png" alt="El email de la demo con el botón Ver el buzo Hyppo"></figure>
+      <figure><img src="assets/guia/3-landing.png" alt="La demo al volver desde el email, con el buzo destacado"></figure>
+      <dl>
+        <dt>Qué decir</dt>
+        <dd>Una acción en la web dispara un email. El link vuelve a la web reconociendo a la persona, aunque abra el mail en otro dispositivo. Si compra, Customer.io lo cuenta como conversión del email.</dd>
+        <dt>Qué hacer</dt>
+        <dd>"Mandame el email", abrí el mail (llega en uno o dos minutos), tocá "Ver el buzo Hyppo" y comprá el buzo destacado.</dd>
+        <dt>Qué mostrar en Customer.io</dt>
+        <dd>"Ver la automation y sus conversiones ↗": enviados, aperturas, clics y la conversión de la compra.</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <p class="caps">Paso 4 · In-app</p>
+      <h2>"Responder en el momento, dentro de la web"</h2>
+      <figure><img src="assets/guia/4-inapp.png" alt="Modal in-app de Customer.io sobre la demo"></figure>
+      <dl>
+        <dt>Qué decir</dt>
+        <dd>Cualquier evento de la web puede disparar un mensaje en pantalla, sin tocar código: el marketing lo arma en Customer.io.</dd>
+        <dt>Qué hacer</dt>
+        <dd>"Disparar el in-app": aparece un modal en unos segundos.</dd>
+        <dt>Qué mostrar en Customer.io</dt>
+        <dd>"Ver la automation ↗": el trigger por evento y el mensaje.</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <p class="caps">Paso 5 · Web push</p>
+      <h2>Pendiente</h2>
+      <p>Web push está en alpha en Customer.io y falta que lo habiliten en el workspace. Hasta entonces, los botones quedan deshabilitados: si preguntan, se puede contar que existe y que el clic en el push abre sus métricas.</p>
+    </section>
+
+    <section class="card">
+      <h2>Si algo no aparece</h2>
+      <ul>
+        <li><strong>"Bloqueado" arriba a la derecha:</strong> bajá el bloqueador de anuncios y recargá.</li>
+        <li><strong>El in-app no llega:</strong> la primera vez en un navegador puede tardar un minuto. Mientras tanto, mostrá la automation en Customer.io.</li>
+        <li><strong>El banner azul no aparece:</strong> recargá la página. Si sigue el naranja, cerrá sesión y volvé a identificarte.</li>
+        <li><strong>El email no llega:</strong> buscalo en spam; el remitente es <code>hello@hyppo.io</code>.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
