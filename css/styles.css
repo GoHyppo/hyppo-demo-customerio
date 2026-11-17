@@ -76,7 +76,8 @@ body.show-notes .notes { display: block; }
 .step p { line-height: 1.5; }
 a.btn { display: inline-block; font-size: 14px; font-weight: 500; padding: 9px 16px; border: 1px solid var(--black); border-radius: 4px; text-decoration: none; background: var(--black); color: var(--white); }
 a.btn.ghost { background: var(--white); color: var(--black); }
-a.btn:hover { border-color: var(--blue); color: var(--blue); }
+a.btn:hover { background: var(--blue); border-color: var(--blue); color: var(--white); }
+a.btn.ghost:hover { background: var(--white); color: var(--blue); }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
 .pill { font-size: 13px; padding: 2px 8px; border-radius: 4px; background: #FFF0E6; color: #000; }
 .pill.ok { background: #E6EEFF; color: var(--blue); }

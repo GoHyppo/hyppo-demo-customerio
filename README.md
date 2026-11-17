@@ -45,7 +45,7 @@ llamada a `cioanalytics` y se conserva entre recargas de la misma pestaña.
 | Pieza | ID | Detalle |
 |---|---|---|
 | Broadcast anónimo "Demo web · banner anónimo" | 2 | Inline en `#cio-banner`, persistente, regla de página `/hyppo-demo-customerio`, objetivo: que se identifique |
-| Automation "Demo web · banner identificado" | 18 | Trigger `demo_identificado`, in-app inline en `#cio-banner`, persistente |
+| Automation "Demo web · banner identificado" | 18 | Trigger `demo_identificado` (con `first_name` y `plan` como propiedades), in-app inline en `#cio-banner`, no persistente |
 | Automation "Demo web · email que vuelve a la web" | 19 | Trigger `demo_email_solicitado`, email de Design Studio, conversión `Order Completed` en 1 día |
 | Automation "Demo web · in-app" | 17 | Trigger `demo_inapp`, in-app modal |
 
@@ -55,6 +55,12 @@ Lo que no es obvio:
   el markup.
 - **Un inline ocupa su lugar hasta que se cierra o vence.** Por eso, al identificarse, la página se
   recarga: el banner identificado recién entra en la carga siguiente.
+- **El banner identificado lee nombre y plan del evento**, no del perfil: la web manda el `identify` y el
+  evento casi juntos, y a veces Customer.io arma el mensaje antes de guardar los atributos (salía "Hola
+  demo-…, tenés el plan free"). Es no persistente para que cada identificación muestre uno nuevo; los
+  pendientes de pruebas anteriores salen de a uno por recarga, el más viejo primero.
+- **En el href de un email de Design Studio va `&`, no `&amp;`**: el compilador escapa igual, y con
+  `&amp;` el link trackeado llegaba con un parámetro `amp;producto`.
 - Los broadcasts anónimos son de plan Premium o Enterprise, y el snippet necesita
   `anonymousInApp: true` en el plugin de in-app.
 - El email usa Arial: Gmail no carga fuentes web, así que Space Grotesk no se vería.
