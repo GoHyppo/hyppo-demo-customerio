@@ -25,18 +25,18 @@
   <!-- Posición de los banners inline: Customer.io reemplaza el contenido de este div. -->
   <div class="banner-wrap">
     <div id="cio-banner"></div>
-    <p class="banner-hint muted">Acá aparece el banner que manda Customer.io: uno para visitantes anónimos y otro para personas identificadas.</p>
+    <p class="banner-hint muted">Aquí aparece el banner que manda Customer.io: uno para visitantes anónimos y otro para personas identificadas.</p>
   </div>
 
   <div id="from-email" class="callout" hidden>
-    <strong>Llegaste desde el email.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Comprá el producto destacado y mirá la conversión en la automation.
+    <strong>Llegaste desde el email.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Compra el producto destacado y mira la conversión en la automation.
   </div>
 
   <main>
     <section class="card step" id="paso-1">
       <p class="caps">Paso 1 · Visitante anónimo</p>
       <h2>Customer.io ya te está viendo</h2>
-      <p>Apenas entrás, el snippet registra un page view con un <code>anonymousId</code>. Sin saber quién sos, ya puede mostrarte un mensaje: es el banner naranja de arriba.</p>
+      <p>Apenas entras, el snippet registra un page view con un <code>anonymousId</code>. Sin saber quién eres, ya puede mostrarte un mensaje: es el banner naranja de arriba.</p>
       <p class="muted">Ahora: <span id="who" class="pill">anónimo</span> · anonymousId <code id="anon-id">—</code></p>
       <div class="row">
         <a class="btn ghost" data-link="bannerAnonimo" target="_blank" rel="noopener">Ver el banner anónimo en Customer.io ↗</a>
@@ -55,16 +55,16 @@
       <p class="caps">Paso 2 · Identificarse</p>
       <h2>Login o registro</h2>
       <form id="form-user">
-        <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="nombre@empresa.com"></label>
-        <label>Nombre <input name="first_name" placeholder="Juan"></label>
-        <label>Plan
-          <select name="plan"><option>free</option><option selected>pro</option><option>enterprise</option></select>
+        <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="sofia@gmail.com"></label>
+        <label>Nombre <input name="first_name" placeholder="Sofía"></label>
+        <label>Nivel de cliente
+          <select name="nivel"><option>nuevo</option><option selected>frecuente</option></select>
         </label>
         <div class="row">
           <button type="submit">Identificarme</button>
         </div>
       </form>
-      <p class="muted">Al identificarte, el banner cambia por uno con tu nombre y tu plan.</p>
+      <p class="muted">Al identificarte, el banner cambia por uno con tu nombre y tu nivel de cliente.</p>
       <div class="row">
         <a class="btn ghost" id="link-profile" target="_blank" rel="noopener" hidden>Ver tu perfil en Customer.io ↗</a>
         <a class="btn ghost" data-link="bannerIdentificado" target="_blank" rel="noopener">Ver el banner identificado ↗</a>
@@ -72,8 +72,8 @@
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
-          <li><code>identify(id, {email, first_name, plan})</code> crea o actualiza el perfil. Lo que hiciste como anónimo se suma al perfil.</li>
-          <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{event.first_name}}</code> y <code>{{event.plan}}</code>).</li>
+          <li><code>identify(id, {email, first_name, nivel})</code> crea o actualiza el perfil. Lo que hiciste como anónimo se suma al perfil.</li>
+          <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{event.first_name}}</code> y <code>{{event.nivel}}</code>).</li>
           <li>"Empezar de nuevo" (en el panel negro) es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo, y limpia el panel.</li>
         </ul>
       </details>
@@ -81,10 +81,10 @@
 
     <section class="card step wide" id="paso-3">
       <p class="caps">Paso 3 · Email → web → conversión</p>
-      <h2>Un email distinto según el plan</h2>
-      <p>Pedí el email: te llega a la casilla del paso 2. La automation elige el contenido según tu plan: a free le ofrece la remera; a pro y enterprise, el buzo, con dos asuntos distintos en un test A/B. El botón del mail vuelve a esta página ya identificado y con el producto destacado. Si lo comprás, cuenta como conversión.</p>
+      <h2>Un email distinto según el nivel</h2>
+      <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado. Si lo compras, cuenta como conversión.</p>
       <div class="row">
-        <button id="btn-email">Mandame el email</button>
+        <button id="btn-email">Envíame el email</button>
         <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation y sus conversiones ↗</a>
         <a class="btn ghost" data-link="experimento" target="_blank" rel="noopener">Ver el test A/B ↗</a>
       </div>
@@ -93,7 +93,7 @@
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
-          <li>El evento <code>demo_email_solicitado</code> lleva el plan como propiedad. La automation tiene una rama True/False sobre ese dato (<code>plan = free</code>): free recibe el email de la remera; el resto pasa por un <em>Experiment</em> que reparte 50/50 entre dos asuntos del email del buzo.</li>
+          <li>El evento <code>demo_email_solicitado</code> lleva el nivel como propiedad. La automation tiene una rama True/False sobre ese dato (<code>nivel = nuevo</code>): los nuevos reciben el email de la remera; los frecuentes pasan por un <em>Experiment</em> que reparte 50/50 entre dos asuntos del email del buzo.</li>
           <li>El Experiment mide como conversión <code>Order Completed</code> dentro de 1 día y la decisión del ganador es manual. Customer.io reemplazó los A/B clásicos de automation por Experiments.</li>
           <li>Los emails están armados en Design Studio y salen desde <code>hello@hyppo.io</code>.</li>
           <li>El link del mail lleva <code>?uid={{customer.id}}</code> y UTMs. Al llegar, la web hace <code>identify(uid)</code>, así el navegador queda asociado a la persona aunque sea otro dispositivo.</li>
@@ -106,7 +106,7 @@
     <section class="card step" id="paso-4">
       <p class="caps">Paso 4 · In-app</p>
       <h2>Un mensaje sobre la web</h2>
-      <p>Hacé algo en la web y Customer.io responde en el momento con un modal.</p>
+      <p>Haz algo en la web y Customer.io responde en el momento con un modal.</p>
       <div class="row">
         <button id="btn-inapp">Disparar el in-app</button>
         <a class="btn ghost" data-link="inapp" target="_blank" rel="noopener">Ver la automation ↗</a>
@@ -120,13 +120,14 @@
       </details>
     </section>
 
-    <section class="card step" id="paso-5">
+    <!-- Web push (paso 5): fuera hasta que Customer.io lo habilite en el workspace (alpha). Para reactivarlo: descomentar esta sección, la llamada a setupWebPush() en js/app.js, pegar la public key en js/config.js y crear la acción en la automation 21. La landing (hyppo_landing) tiene el mismo paso comentado.
+<section class="card step" id="paso-5">
       <p class="caps">Paso 5 · Web push</p>
       <h2>Una notificación en el navegador</h2>
-      <p>Activás las notificaciones, pedís un push y al tocarlo te lleva a sus métricas en Customer.io.</p>
+      <p>Activas las notificaciones, pides un push y, al tocarlo, te lleva a sus métricas en Customer.io.</p>
       <div class="row">
         <button id="btn-push-on" disabled>Activar notificaciones</button>
-        <button id="btn-push" disabled>Mandame un push</button>
+        <button id="btn-push" disabled>Envíame un push</button>
       </div>
       <p id="push-hint" class="muted">Web push está en alpha: falta que Customer.io lo habilite en el workspace.</p>
       <details class="notes">
@@ -138,6 +139,7 @@
         </ul>
       </details>
     </section>
+    -->
   </main>
 
   <button type="button" id="btn-log-open" class="log-tab">Ver lo que la web le manda a Customer.io (<span id="log-count">0</span>)</button>

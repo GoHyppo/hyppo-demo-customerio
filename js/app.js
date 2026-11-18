@@ -3,8 +3,8 @@ const $ = (sel) => document.querySelector(sel);
 
 const PRODUCTS = [
   { id: "remera-hyppo", name: "Remera Hyppo", price: 25 },
-  { id: "buzo-hyppo", name: "Buzo Hyppo", price: 60 },
-  { id: "taza-hyppo", name: "Taza Hyppo", price: 12 },
+  { id: "buzo-hyppo", name: "Buzo Hyppo", price: 64 },
+  { id: "gorra-hyppo", name: "Gorra Hyppo", price: 22 },
 ];
 
 function log(method, detail = "", kind = "") {
@@ -123,12 +123,12 @@ function setupUi() {
     const f = Object.fromEntries(new FormData(e.target));
     // ID estable por persona: el mismo email da el mismo perfil en cada demo.
     const id = "demo-" + f.email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const traits = { email: f.email.trim(), plan: f.plan };
+    const traits = { email: f.email.trim(), nivel: f.nivel };
     if (f.first_name) traits.first_name = f.first_name.trim();
     await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits);
-    // El banner lee nombre y plan del evento: si los leyera del perfil, a veces Customer.io
+    // El banner lee nombre y nivel del evento: si los leyera del perfil, a veces Customer.io
     // arma el mensaje antes de guardar los atributos del identify y cae en los valores por defecto.
-    const props = { first_name: traits.first_name || "", plan: traits.plan };
+    const props = { first_name: traits.first_name || "", nivel: traits.nivel };
     await send('track("demo_identificado")', cioanalytics.track("demo_identificado", props), props);
     // Un inline ocupa su lugar hasta que se cierra: el banner nuevo entra al recargar la página.
     reloadIn(15, "Customer.io está armando tu banner");
@@ -145,14 +145,14 @@ function setupUi() {
   $("#btn-email").addEventListener("click", () => {
     const email = cioanalytics.user?.().traits()?.email;
     if (!currentUserId() || !email) {
-      $("#email-hint").textContent = "Primero identificate con tu email en el paso 2.";
+      $("#email-hint").textContent = "Primero identifícate con tu email en el paso 2.";
       return;
     }
-    // El plan viaja en el evento: la automation elige la rama con él (free → remera; pro y enterprise → buzo con test de asunto).
-    const plan = cioanalytics.user().traits()?.plan || "free";
-    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado", { plan }), { email, plan });
-    const producto = plan === "free" ? "la remera" : "el buzo";
-    $("#email-hint").textContent = `Listo: en uno o dos minutos llega a ${email}. Con el plan ${plan}, el email ofrece ${producto}.`;
+    // El nivel viaja en el evento: la automation elige la rama con él (nuevo → remera; frecuente → buzo con test de asunto).
+    const nivel = cioanalytics.user().traits()?.nivel || "nuevo";
+    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado", { nivel }), { email, nivel });
+    const producto = nivel === "nuevo" ? "la remera" : "el buzo";
+    $("#email-hint").textContent = `Listo: en uno o dos minutos llega a ${email}. Como cliente ${nivel}, el email te ofrece ${producto}.`;
   });
 
   $("#products").addEventListener("click", (e) => {
@@ -174,6 +174,54 @@ function setupUi() {
     send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "La automation responde con un modal en unos segundos");
   });
 
+}
+
+// Web push (paso 5): el plugin oficial se carga solo si hay public key, y pide permiso con un clic.
+async function setupWebPush() {
+  const on = $("#btn-push-on"), push = $("#btn-push"), hint = $("#push-hint");
+  if (!cfg.vapidPublicKey) return; // sin key, los botones quedan deshabilitados con el aviso del HTML
+  await new Promise((resolve) => {
+    const s = document.createElement("script");
+    s.src = "https://cdp.customer.io/v1/analytics-js/webPushPlugin.js";
+    s.onload = s.onerror = resolve;
+    document.head.appendChild(s);
+  });
+  if (!window.CustomerIOWebPush) {
+    hint.textContent = "El bloqueador de anuncios no deja cargar el plugin de web push.";
+    return;
+  }
+  await cioanalytics.register(CustomerIOWebPush.WebPushPlugin({
+    vapidPublicKey: cfg.vapidPublicKey,
+    // El sitio vive en /hyppo-demo-customerio/: el service worker se sirve desde esa carpeta.
+    serviceWorkerUrl: new URL("cio-webpush-sw.js", location.href).pathname,
+    trackUrl: "https://track.customer.io",
+  }));
+
+  async function refresh() {
+    const subscribed = Boolean(await cioanalytics.webPush.subscription());
+    on.disabled = subscribed;
+    push.disabled = !subscribed;
+    hint.textContent = subscribed
+      ? "Notificaciones activadas en este navegador."
+      : "Primero identifícate en el paso 2; después activa las notificaciones.";
+  }
+  on.addEventListener("click", () => {
+    if (!currentUserId()) { hint.textContent = "Primero identifícate en el paso 2."; return; }
+    on.disabled = true;
+    // subscribe() va primero y sin await antes, para que Safari muestre el pedido de permiso.
+    cioanalytics.webPush.subscribe()
+      .then(() => { log("webPush.subscribe()", "El navegador quedó como dispositivo web en tu perfil"); return refresh(); })
+      .catch((err) => {
+        on.disabled = false;
+        hint.textContent = Notification.permission === "denied"
+          ? "Las notificaciones están bloqueadas: permítelas en la configuración del navegador y vuelve a intentar."
+          : String(err.message || err);
+      });
+  });
+  push.addEventListener("click", () => {
+    send('track("demo_push")', cioanalytics.track("demo_push"), "La automation responde con un web push en unos segundos");
+  });
+  await refresh();
 }
 
 // Si la persona llega desde el link del email (?uid=…), la identificamos y destacamos el producto.
@@ -206,9 +254,9 @@ function init() {
 
   // Si analytics.min.js no carga en unos segundos, casi siempre es un bloqueador de anuncios.
   const blocked = setTimeout(() => {
-    $("#status").textContent = "Bloqueado: desactivá el bloqueador para esta página";
+    $("#status").textContent = "Bloqueado: desactiva el bloqueador para esta página";
     $("#status").classList.add("err");
-    log("snippet no cargó", "Un bloqueador de anuncios (Brave Shields, uBlock…) bloquea cdp.customer.io. Desactivalo para este sitio y recargá.", "err");
+    log("snippet no cargó", "Un bloqueador de anuncios (Brave Shields, uBlock…) bloquea cdp.customer.io. Desactívalo para este sitio y recarga.", "err");
   }, 6000);
 
   cioanalytics.ready(() => {
@@ -217,6 +265,8 @@ function init() {
     $("#status").classList.add("ok");
     log("ready", { workspace: cfg.workspaceId });
     refreshUserInfo();
+    // Web push, fuera hasta que Customer.io lo habilite (ver la nota del paso 5 en index.html):
+    // setupWebPush().catch((err) => log("web push: ERROR", String(err), "err"));
   });
 }
 
