@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="log-closed">
   <header class="top">
     <img src="assets/isotipo.png" alt="Hyppo" class="logo">
     <div>
@@ -74,7 +74,7 @@
         <ul>
           <li><code>identify(id, {email, first_name, plan})</code> crea o actualiza el perfil. Lo que hiciste como anónimo se suma al perfil.</li>
           <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{event.first_name}}</code> y <code>{{event.plan}}</code>).</li>
-          <li>"Empezar de nuevo" (arriba del panel negro) es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo, y limpia el panel.</li>
+          <li>"Empezar de nuevo" (en el panel negro) es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo, y limpia el panel.</li>
         </ul>
       </details>
     </section>
@@ -140,8 +140,13 @@
     </section>
   </main>
 
+  <button type="button" id="btn-log-open" class="log-tab">Ver lo que la web le manda a Customer.io (<span id="log-count">0</span>)</button>
   <aside class="log">
-    <div class="log-head"><span class="caps">Lo que la web le manda a Customer.io</span><button id="btn-reset" class="ghost small">Empezar de nuevo</button></div>
+    <div class="log-head">
+      <span class="caps">Lo que la web le manda a Customer.io</span>
+      <button type="button" id="btn-reset" class="ghost small">Empezar de nuevo</button>
+      <button type="button" id="btn-log-close" class="ghost small" aria-label="Minimizar el panel">—</button>
+    </div>
     <ol id="log"></ol>
   </aside>
 

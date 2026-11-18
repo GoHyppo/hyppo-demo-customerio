@@ -18,15 +18,16 @@ Workspace: **186015** ("Hyppo", cuenta de clientes `126155`, US).
 | 4 · In-app | `track("demo_inapp")` | Modal: automation 17 |
 | 5 · Web push | Pendiente | Web push está en alpha; hay que pedirle a Customer.io que lo habilite |
 
-El toggle **Notas técnicas** de arriba muestra el detalle de cada paso. El panel negro muestra cada
-llamada a `cioanalytics` y se conserva entre recargas de la misma pestaña.
+El toggle **Notas técnicas** de arriba muestra el detalle de cada paso. El panel negro (arranca
+minimizado, se abre abajo a la derecha) muestra cada llamada a `cioanalytics` y se conserva entre recargas de
+la misma pestaña.
 
 ## Antes de la reunión
 
 - Hacer el recorrido una vez con tu email: el plugin de in-app consulta despacio (cerca de una vez
   por minuto) hasta el primer mensaje del navegador y después pasa a tiempo real.
 - Bajar el bloqueador de anuncios en el sitio (Brave Shields, uBlock bloquean `cdp.customer.io`).
-- Para empezar de cero, "Empezar de nuevo", arriba del panel negro: visitante anónimo con otro `anonymousId` y el panel limpio.
+- Para empezar de cero, "Empezar de nuevo" en el panel negro: visitante anónimo con otro `anonymousId` y el panel limpio.
 - El ID de cada persona es `demo-` + su email normalizado, así que el mismo email vuelve al mismo
   perfil.
 

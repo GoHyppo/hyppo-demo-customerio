@@ -12,6 +12,7 @@ function log(method, detail = "", kind = "") {
   li.className = kind;
   li.innerHTML = `<span class="t">${new Date().toLocaleTimeString()}</span> <code>${method}</code> ${detail ? `<pre>${typeof detail === "string" ? detail : JSON.stringify(detail, null, 2)}</pre>` : ""}`;
   $("#log").prepend(li);
+  countLog();
   console.log("[cio]", method, detail);
 }
 
@@ -35,13 +36,22 @@ function loadSnippet(writeKey, options) {
   analytics.load(writeKey, options);
 }
 
-// El log sobrevive a las recargas de la demo (solo en esta pestaña).
+function countLog() { $("#log-count").textContent = $("#log").children.length; }
+
+// El log, y si el panel está abierto, sobreviven a las recargas de la demo (solo en esta pestaña).
 const LOG_KEY = "cio-demo-log";
 function saveLog() {
   try { sessionStorage.setItem(LOG_KEY, $("#log").innerHTML); } catch (e) { /* sin storage, se pierde el log */ }
 }
 function restoreLog() {
   try { $("#log").innerHTML = sessionStorage.getItem(LOG_KEY) || ""; } catch (e) { /* idem */ }
+  countLog();
+  try { setLogOpen(sessionStorage.getItem(LOG_OPEN_KEY) === "1"); } catch (e) { /* queda minimizado */ }
+}
+const LOG_OPEN_KEY = "cio-demo-log-open";
+function setLogOpen(open) {
+  document.body.classList.toggle("log-closed", !open);
+  try { sessionStorage.setItem(LOG_OPEN_KEY, open ? "1" : "0"); } catch (e) { /* sin storage */ }
 }
 
 function reloadIn(secs, reason) {
@@ -104,6 +114,8 @@ function renderProducts(highlight) {
 function setupUi() {
   document.querySelectorAll("[data-link]").forEach((a) => { a.href = cfg.links[a.dataset.link]; });
 
+  $("#btn-log-open").addEventListener("click", () => setLogOpen(true));
+  $("#btn-log-close").addEventListener("click", () => setLogOpen(false));
   $("#toggle-notes").addEventListener("change", (e) => document.body.classList.toggle("show-notes", e.target.checked));
 
   $("#form-user").addEventListener("submit", async (e) => {

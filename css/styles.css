@@ -50,8 +50,13 @@ details li { margin: 6px 0; line-height: 1.45; }
 .feed { margin-top: 12px; position: relative; min-height: 80px; }
 
 .log { position: fixed; top: 0; right: 0; bottom: 0; width: 380px; background: var(--black); color: var(--white); display: flex; flex-direction: column; }
-.log .caps { color: var(--grey-40); margin: 0; }
-.log-head { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #222; }
+.log .caps { color: var(--grey-40); margin: 0; margin-right: auto; }
+/* El panel arranca minimizado: queda una pestaña abajo a la derecha. */
+.log-tab { display: none; position: fixed; right: 16px; bottom: 16px; z-index: 10; }
+body.log-closed { padding-right: 0; }
+body.log-closed .log { display: none; }
+body.log-closed .log-tab { display: block; }
+.log-head { display: flex; gap: 8px; align-items: center; padding: 16px; border-bottom: 1px solid #222; }
 .log-head button { border-color: #444; background: transparent; color: var(--white); white-space: nowrap; flex-shrink: 0; }
 #log { list-style: none; margin: 0; padding: 0 16px; overflow-y: auto; flex: 1; font-size: 12px; }
 #log li { padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
@@ -94,14 +99,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   .banner-wrap, .callout { margin-left: 16px; margin-right: 16px; }
   .top { flex-wrap: wrap; }
 }
-.step p { max-width: 68ch; }
+.step p { max-width: 60ch; text-wrap: pretty; }
 .pill.ok { color: #0B3FC4; }
 
 /* Guía para presentar */
 body.guide { padding-right: 0; }
 .guide-main { display: block; max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
 .guide-main .card { margin-bottom: 16px; }
-.guide-main li, .guide-main dd, .guide-main p { line-height: 1.55; }
+.guide-main li, .guide-main dd, .guide-main p { line-height: 1.55; max-width: 62ch; text-wrap: pretty; }
 .guide-main figure { margin: 16px 0; }
 .guide-main figure img { width: 100%; border: 1px solid var(--grey-10); border-radius: 8px; display: block; }
 .guide-main dt { font-weight: 700; margin-top: 12px; }
