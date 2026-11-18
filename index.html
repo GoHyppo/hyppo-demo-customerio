@@ -6,6 +6,7 @@
   <title>Hyppo · Demo Customer.io</title>
   <link rel="icon" href="assets/isotipo.png">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@29.5.3/dist/css/intlTelInput.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="log-closed">
@@ -57,8 +58,12 @@
       <form id="form-user">
         <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="sofia@gmail.com"></label>
         <label>Nombre <input name="first_name" placeholder="Sofía"></label>
-        <label>WhatsApp (opcional, para el paso 5) <input name="whatsapp" type="tel" inputmode="tel" placeholder="5491155550142"></label>
-        <p class="muted">Con código de país y sin espacios. En Argentina, 549 + código de área + número.</p>
+        <!-- div y no label: el selector de país de intl-tel-input es un botón y no puede ir dentro del label. -->
+        <div class="field">
+          <label for="f-whatsapp">WhatsApp (opcional, para el paso 5)</label>
+          <input id="f-whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel">
+          <span id="whatsapp-error" class="field-error" hidden>Revisa el número: no parece válido para ese país.</span>
+        </div>
         <label>Nivel de cliente
           <select name="nivel"><option>nuevo</option><option selected>frecuente</option></select>
         </label>
@@ -174,6 +179,8 @@
     <ol id="log"></ol>
   </aside>
 
+  <!-- Selector de país del WhatsApp: la misma librería y versión que el formulario de hyppo.io (hyppo_landing). -->
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@29.5.3/dist/js/intlTelInputWithUtils.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>

@@ -23,7 +23,13 @@ main { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr
 .card.wide { grid-column: 1 / -1; }
 
 form { display: grid; gap: 12px; }
-label { display: grid; gap: 4px; font-size: 13px; color: var(--grey-60); }
+label, .field { display: grid; gap: 4px; font-size: 13px; color: var(--grey-60); }
+/* intl-tel-input con los colores de la demo, como en hyppo.io (src/styles/phone.css de hyppo_landing). */
+.iti { width: 100%; font-family: var(--font); --iti-border-color: var(--grey-10); --iti-hover-color: var(--grey-05); --iti-icon-color: var(--grey-60); }
+.iti input { width: 100%; }
+.iti__dropdown-content, .iti__search-input { font-family: var(--font); font-size: 14px; }
+.iti__dial-code { color: var(--grey-60); }
+.field-error { color: var(--red); }
 input, select { font: inherit; font-size: 15px; padding: 8px 10px; border: 1px solid var(--grey-10); border-radius: 4px; color: var(--black); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 form.row input { flex: 1; }

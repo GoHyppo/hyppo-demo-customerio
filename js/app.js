@@ -66,6 +66,48 @@ function reloadIn(secs, reason) {
   tick();
 }
 
+// WhatsApp: intl-tel-input igual que el formulario de hyppo.io (hyppo_landing, src/lib/phone.ts).
+// País inicial según la zona horaria del dispositivo; si no la reconoce, Argentina.
+const TZ = {
+  ar: /^America\/(Argentina\/|Buenos_Aires$|Cordoba$|Mendoza$|Catamarca$|Jujuy$)/,
+  mx: /^America\/(Mexico_City|Cancun|Merida|Monterrey|Matamoros|Chihuahua|Ciudad_Juarez|Ojinaga|Mazatlan|Bahia_Banderas|Hermosillo|Tijuana)$/,
+  pe: /^America\/Lima$/, cl: /^(America\/(Santiago|Punta_Arenas)|Pacific\/Easter)$/,
+  co: /^America\/Bogota$/, uy: /^America\/Montevideo$/, py: /^America\/Asuncion$/,
+  es: /^(Europe\/Madrid|Atlantic\/Canary|Africa\/Ceuta)$/,
+  us: /^(America\/(New_York|Chicago|Denver|Los_Angeles|Phoenix|Anchorage|Detroit|Boise)|Pacific\/Honolulu)$/,
+};
+function detectCountry() {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    for (const iso in TZ) if (TZ[iso].test(tz)) return iso;
+  } catch (e) { /* sin Intl: Argentina */ }
+  return "ar";
+}
+let phoneInput = null;
+function setupPhone() {
+  if (!window.intlTelInput) return; // si el CDN no cargó, queda un campo de texto común
+  phoneInput = window.intlTelInput($("#f-whatsapp"), {
+    initialCountry: detectCountry(),
+    separateDialCode: true,
+    countryNameLocale: "es",
+    uiTranslations: { searchPlaceholder: "Buscar", searchEmptyState: "No se encontraron resultados", countryListAriaLabel: "Lista de países", noCountrySelected: "Selecciona el país" },
+    countryOrder: ["ar", "mx", "pe", "co", "cl", "py", "uy", "us", "es"],
+  });
+}
+// Devuelve el WhatsApp en dígitos con código de país (como lo identifica GoChat), "" si está vacío,
+// o null si no es un número válido.
+function readWhatsapp() {
+  const input = $("#f-whatsapp");
+  const raw = input.value.trim();
+  if (!raw) return "";
+  if (!phoneInput) return raw.replace(/\D/g, "");
+  if (!phoneInput.isValidNumber()) return null;
+  let e164 = phoneInput.getNumber();
+  // libphonenumber lee "11 5555 0142" como fijo argentino (+5411…): WhatsApp necesita el 9 del celular.
+  if (phoneInput.getSelectedCountry()?.iso2 === "ar" && /^\+54[1-8]\d{9}$/.test(e164)) e164 = "+549" + e164.slice(3);
+  return e164.replace(/\D/g, "");
+}
+
 function currentUserId() {
   return cioanalytics.user?.().id() || null;
 }
@@ -125,8 +167,9 @@ function setupUi() {
     const id = "demo-" + f.email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const traits = { email: f.email.trim(), nivel: f.nivel };
     if (f.first_name) traits.first_name = f.first_name.trim();
-    // WhatsApp: solo dígitos con código de país, que es como GoChat identifica al contacto.
-    const whatsapp = (f.whatsapp || "").replace(/\D/g, "");
+    const whatsapp = readWhatsapp();
+    $("#whatsapp-error").hidden = whatsapp !== null;
+    if (whatsapp === null) { $("#f-whatsapp").focus(); return; }
     if (whatsapp) { traits.whatsapp = whatsapp; traits.phone = "+" + whatsapp; }
     await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits);
     // El banner lee nombre y nivel del evento: si los leyera del perfil, a veces Customer.io
@@ -266,6 +309,7 @@ function init() {
   });
   cioanalytics.page();
   restoreLog();
+  setupPhone();
   setupUi();
   handleEmailLanding();
 
