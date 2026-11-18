@@ -26,7 +26,7 @@ llamada a `cioanalytics` y se conserva entre recargas de la misma pestaña.
 - Hacer el recorrido una vez con tu email: el plugin de in-app consulta despacio (cerca de una vez
   por minuto) hasta el primer mensaje del navegador y después pasa a tiempo real.
 - Bajar el bloqueador de anuncios en el sitio (Brave Shields, uBlock bloquean `cdp.customer.io`).
-- Para empezar de cero, "Cerrar sesión" en el paso 2.
+- Para empezar de cero, "Empezar de nuevo", arriba del panel negro: visitante anónimo con otro `anonymousId` y el panel limpio.
 - El ID de cada persona es `demo-` + su email normalizado, así que el mismo email vuelve al mismo
   perfil.
 
@@ -45,7 +45,7 @@ llamada a `cioanalytics` y se conserva entre recargas de la misma pestaña.
 | Pieza | ID | Detalle |
 |---|---|---|
 | Broadcast anónimo "Demo web · banner anónimo" | 2 | Inline en `#cio-banner`, persistente, regla de página `/hyppo-demo-customerio`, objetivo: que se identifique |
-| Automation "Demo web · banner identificado" | 18 | Trigger `demo_identificado` (con `first_name` y `plan` como propiedades), in-app inline en `#cio-banner`, no persistente |
+| Automation "Demo web · banner identificado" | 18 | Trigger `demo_identificado` (con `first_name` y `plan` como propiedades), in-app inline en `#cio-banner`, persistente con ✕ para cerrarlo |
 | Automation "Demo web · email por plan con test de asunto" | 19 | Trigger `demo_email_solicitado`; rama True/False sobre la propiedad `plan` del evento; emails de Design Studio; conversión `Order Completed` en 1 día |
 | Experiment "Demo web · asunto del email del buzo" | 1 | 50/50 entre dos asuntos, conversión `Order Completed` en 1 día, ganador manual |
 | Automation "Demo web · in-app" | 17 | Trigger `demo_inapp`, in-app modal |
@@ -58,8 +58,13 @@ Lo que no es obvio:
   recarga: el banner identificado recién entra en la carga siguiente.
 - **El banner identificado lee nombre y plan del evento**, no del perfil: la web manda el `identify` y el
   evento casi juntos, y a veces Customer.io arma el mensaje antes de guardar los atributos (salía "Hola
-  demo-…, tenés el plan free"). Es no persistente para que cada identificación muestre uno nuevo; los
-  pendientes de pruebas anteriores salen de a uno por recarga, el más viejo primero.
+  demo-…, tenés el plan free"). Es persistente: queda entre recargas hasta que se cierra con la ✕. Si
+  alguien se identifica varias veces sin cerrarlo, los banners se encolan y salen de a uno, el más viejo
+  primero.
+- **Si el Liquid nombra un atributo que el perfil no tiene, Customer.io no manda el mensaje**, aunque
+  esté como argumento de `default:`. Con `event.first_name | default: customer.first_name`, quien se
+  identificaba sin nombre no recibía el banner (`undefined variable: customer.first_name` en la
+  delivery). Por eso el banner usa solo `event.*`.
 - **En el href de un email de Design Studio va `&`, no `&amp;`**: el compilador escapa igual, y con
   `&amp;` el link trackeado llegaba con un parámetro `amp;producto`.
 - Los broadcasts anónimos son de plan Premium o Enterprise, y el snippet necesita

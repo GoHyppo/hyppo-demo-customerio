@@ -122,10 +122,12 @@ function setupUi() {
     reloadIn(15, "Customer.io está armando tu banner");
   });
 
-  $("#btn-logout").addEventListener("click", () => {
+  // Vuelve a ser un visitante anónimo nuevo: reset() borra el id, los traits y el anonymousId.
+  $("#btn-reset").addEventListener("click", () => {
     cioanalytics.reset();
-    log("reset", "Vuelve a ser un visitante anónimo");
-    reloadIn(1, "Cerrando sesión");
+    $("#log").innerHTML = "";
+    log("reset", "Visitante anónimo nuevo");
+    reloadIn(1, "Empezando de nuevo");
   });
 
   $("#btn-email").addEventListener("click", () => {
@@ -160,7 +162,6 @@ function setupUi() {
     send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "La automation responde con un modal en unos segundos");
   });
 
-  $("#btn-clear").addEventListener("click", () => { $("#log").innerHTML = ""; saveLog(); });
 }
 
 // Si la persona llega desde el link del email (?uid=…), la identificamos y destacamos el producto.

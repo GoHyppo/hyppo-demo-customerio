@@ -62,7 +62,6 @@
         </label>
         <div class="row">
           <button type="submit">Identificarme</button>
-          <button type="button" id="btn-logout" class="ghost">Cerrar sesión</button>
         </div>
       </form>
       <p class="muted">Al identificarte, el banner cambia por uno con tu nombre y tu plan.</p>
@@ -74,8 +73,8 @@
         <summary>Notas técnicas</summary>
         <ul>
           <li><code>identify(id, {email, first_name, plan})</code> crea o actualiza el perfil. Lo que hiciste como anónimo se suma al perfil.</li>
-          <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{customer.first_name}}</code> y <code>{{customer.plan}}</code>).</li>
-          <li>"Cerrar sesión" es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo.</li>
+          <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{event.first_name}}</code> y <code>{{event.plan}}</code>).</li>
+          <li>"Empezar de nuevo" (arriba del panel negro) es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo, y limpia el panel.</li>
         </ul>
       </details>
     </section>
@@ -142,7 +141,7 @@
   </main>
 
   <aside class="log">
-    <div class="log-head"><span class="caps">Lo que la web le manda a Customer.io</span><button id="btn-clear" class="ghost small">Limpiar</button></div>
+    <div class="log-head"><span class="caps">Lo que la web le manda a Customer.io</span><button id="btn-reset" class="ghost small">Empezar de nuevo</button></div>
     <ol id="log"></ol>
   </aside>
 
