@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="log-closed">
-  <header class="top">
+  <header class="top"><div class="wrap">
     <img src="assets/isotipo.png" alt="Hyppo" class="logo">
     <div>
       <p class="caps">Hyppo · Demo en vivo</p>
@@ -21,26 +21,30 @@
       <label class="switch"><input type="checkbox" id="toggle-notes"> Notas técnicas</label>
       <div id="status" class="status">Cargando…</div>
     </div>
-  </header>
+  </div></header>
 
   <!-- Posición de los banners inline: Customer.io reemplaza el contenido de este div. -->
-  <div class="banner-wrap">
+  <div class="wrap banner-wrap">
     <div id="cio-banner"></div>
     <p class="banner-hint muted">Aquí aparece el banner que manda Customer.io: uno para visitantes anónimos y otro para personas identificadas.</p>
   </div>
 
-  <div id="from-email" class="callout" hidden>
+  <div class="wrap"><div id="from-email" class="callout" hidden>
     <strong>Llegaste desde <span id="from-email-canal">el email</span>.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Compra el producto destacado y mira la conversión en la automation.
-  </div>
+  </div></div>
 
-  <main>
+  <main class="wrap">
     <section class="card step" id="paso-1">
-      <p class="caps">Paso 1 · Visitante anónimo</p>
-      <h2>Customer.io ya te está viendo</h2>
-      <p>Apenas entras, el snippet registra un page view con un <code>anonymousId</code>. Sin saber quién eres, ya puede mostrarte un mensaje: es el banner naranja de arriba.</p>
-      <p class="muted">Ahora: <span id="who" class="pill">anónimo</span> · anonymousId <code id="anon-id">—</code></p>
-      <div class="row">
-        <a class="btn ghost" data-link="bannerAnonimo" target="_blank" rel="noopener">Ver el banner anónimo en Customer.io ↗</a>
+      <div class="step-body">
+        <p class="caps"><span class="num">1</span>Visitante anónimo</p>
+        <h2>Customer.io ya te está viendo</h2>
+        <p>Apenas entras, el snippet registra un page view con un <code>anonymousId</code>. Sin saber quién eres, ya puede mostrarte un mensaje: es el banner naranja de arriba.</p>
+      </div>
+      <div class="step-action">
+        <p class="muted">Ahora: <span id="who" class="pill">anónimo</span> · anonymousId <code id="anon-id">—</code></p>
+        <div class="links">
+          <a class="btn ghost" data-link="bannerAnonimo" target="_blank" rel="noopener">Ver el banner anónimo ↗</a>
+        </div>
       </div>
       <details class="notes">
         <summary>Notas técnicas</summary>
@@ -53,8 +57,12 @@
     </section>
 
     <section class="card step" id="paso-2">
-      <p class="caps">Paso 2 · Identificarse</p>
-      <h2>Login o registro</h2>
+      <div class="step-body">
+        <p class="caps"><span class="num">2</span>Identificarse</p>
+        <h2>Login o registro</h2>
+        <p>Al identificarte, el banner cambia por uno con tu nombre y tu nivel de cliente.</p>
+      </div>
+      <div class="step-action">
       <form id="form-user">
         <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="sofia@gmail.com"></label>
         <label>Nombre <input name="first_name" placeholder="Sofía"></label>
@@ -67,14 +75,12 @@
         <label>Nivel de cliente
           <select name="nivel"><option>nuevo</option><option selected>frecuente</option></select>
         </label>
-        <div class="row">
-          <button type="submit">Identificarme</button>
-        </div>
+        <button type="submit">Identificarme</button>
       </form>
-      <p class="muted">Al identificarte, el banner cambia por uno con tu nombre y tu nivel de cliente.</p>
-      <div class="row">
-        <a class="btn ghost" id="link-profile" target="_blank" rel="noopener" hidden>Ver tu perfil en Customer.io ↗</a>
+      <div class="links">
+        <a class="btn ghost" id="link-profile" target="_blank" rel="noopener" hidden>Ver tu perfil ↗</a>
         <a class="btn ghost" data-link="bannerIdentificado" target="_blank" rel="noopener">Ver el banner identificado ↗</a>
+      </div>
       </div>
       <details class="notes">
         <summary>Notas técnicas</summary>
@@ -86,16 +92,20 @@
       </details>
     </section>
 
-    <section class="card step wide" id="paso-3">
-      <p class="caps">Paso 3 · Email → web → conversión</p>
-      <h2>Un email distinto según el nivel</h2>
-      <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado. Si lo compras, cuenta como conversión.</p>
-      <div class="row">
-        <button id="btn-email">Envíame el email</button>
-        <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation y sus conversiones ↗</a>
-        <a class="btn ghost" data-link="experimento" target="_blank" rel="noopener">Ver el test A/B ↗</a>
+    <section class="card step" id="paso-3">
+      <div class="step-body">
+        <p class="caps"><span class="num">3</span>Email → web → conversión</p>
+        <h2>Un email distinto según el nivel</h2>
+        <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado. Si lo compras, cuenta como conversión.</p>
       </div>
-      <p id="email-hint" class="muted"></p>
+      <div class="step-action">
+        <div><button id="btn-email">Envíame el email</button></div>
+        <p id="email-hint" class="muted"></p>
+        <div class="links">
+          <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation ↗</a>
+          <a class="btn ghost" data-link="experimento" target="_blank" rel="noopener">Ver el test A/B ↗</a>
+        </div>
+      </div>
       <div class="products" id="products"></div>
       <details class="notes">
         <summary>Notas técnicas</summary>
@@ -111,12 +121,16 @@
     </section>
 
     <section class="card step" id="paso-4">
-      <p class="caps">Paso 4 · In-app</p>
-      <h2>Un mensaje sobre la web</h2>
-      <p>Haz algo en la web y Customer.io responde en el momento con un modal.</p>
-      <div class="row">
-        <button id="btn-inapp">Disparar el in-app</button>
-        <a class="btn ghost" data-link="inapp" target="_blank" rel="noopener">Ver la automation ↗</a>
+      <div class="step-body">
+        <p class="caps"><span class="num">4</span>In-app</p>
+        <h2>Un mensaje sobre la web</h2>
+        <p>Haz algo en la web y Customer.io responde en el momento con un modal.</p>
+      </div>
+      <div class="step-action">
+        <div><button id="btn-inapp">Disparar el in-app</button></div>
+        <div class="links">
+          <a class="btn ghost" data-link="inapp" target="_blank" rel="noopener">Ver la automation ↗</a>
+        </div>
       </div>
       <details class="notes">
         <summary>Notas técnicas</summary>
@@ -128,14 +142,18 @@
     </section>
 
     <section class="card step" id="paso-5">
-      <p class="caps">Paso 5 · WhatsApp con GoChat</p>
-      <h2>El mismo journey, por WhatsApp</h2>
-      <p>Customer.io te envía una plantilla de WhatsApp por GoChat con el producto de tu nivel. El botón vuelve a esta página ya identificado; si respondes, el agente de IA de GoChat sabe quién eres y qué te ofrecimos, y lo que pasa en el chat vuelve a tu perfil en Customer.io.</p>
-      <div class="row">
-        <button id="btn-whatsapp">Envíame un WhatsApp</button>
-        <a class="btn ghost" data-link="whatsapp" target="_blank" rel="noopener">Ver la automation ↗</a>
+      <div class="step-body">
+        <p class="caps"><span class="num">5</span>WhatsApp con GoChat</p>
+        <h2>El mismo journey, por WhatsApp</h2>
+        <p>Customer.io te envía una plantilla de WhatsApp por GoChat con el producto de tu nivel. El botón vuelve a esta página ya identificado; si respondes, el agente de IA de GoChat sabe quién eres y qué te ofrecimos, y lo que pasa en el chat vuelve a tu perfil en Customer.io.</p>
       </div>
-      <p id="whatsapp-hint" class="muted"></p>
+      <div class="step-action">
+        <div><button id="btn-whatsapp">Envíame un WhatsApp</button></div>
+        <p id="whatsapp-hint" class="muted"></p>
+        <div class="links">
+          <a class="btn ghost" data-link="whatsapp" target="_blank" rel="noopener">Ver la automation ↗</a>
+        </div>
+      </div>
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
