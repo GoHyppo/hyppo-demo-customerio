@@ -14,8 +14,9 @@ window.CIO_CONFIG = {
     experimento: "https://fly.customer.io/workspaces/186015/experiments/1",
     inapp: "https://fly.customer.io/workspaces/186015/journeys/automations/17",
     whatsapp: "https://fly.customer.io/workspaces/186015/journeys/automations/22",
+    push: "https://fly.customer.io/workspaces/186015/journeys/automations/21",
   },
 
-  // Web push: pegar acá la public key de Settings → Push → Web cuando Customer.io lo habilite.
-  vapidPublicKey: "",
+  // Web push: la public key (VAPID) de Settings → Push → Web. Es pública, va commiteada.
+  vapidPublicKey: "BNjeEI5inFXgau7enCkWSnDzPhzI8_O42MiUIsQqGVI63FAMGxFZx8QfOp-xdYqtHngedB-8phg_hRFap8p0Wcw",
 };

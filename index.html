@@ -165,26 +165,31 @@
       </details>
     </section>
 
-    <!-- Web push (paso 6): fuera hasta que Customer.io lo habilite en el workspace (alpha). Para reactivarlo: descomentar esta sección, la llamada a setupWebPush() en js/app.js, pegar la public key en js/config.js y crear la acción en la automation 21. La landing (hyppo_landing) tiene el mismo paso comentado.
-<section class="card step" id="paso-5">
-      <p class="caps">Paso 6 · Web push</p>
-      <h2>Una notificación en el navegador</h2>
-      <p>Activas las notificaciones, pides un push y, al tocarlo, te lleva a sus métricas en Customer.io.</p>
-      <div class="row">
-        <button id="btn-push-on" disabled>Activar notificaciones</button>
-        <button id="btn-push" disabled>Envíame un push</button>
+    <section class="card step" id="paso-6">
+      <div class="step-body">
+        <p class="caps"><span class="num">6</span>Web push</p>
+        <h2>Una notificación en el navegador</h2>
+        <p>Activas las notificaciones, pides un push y, al tocarlo, te lleva a sus métricas en Customer.io.</p>
       </div>
-      <p id="push-hint" class="muted">Web push está en alpha: falta que Customer.io lo habilite en el workspace.</p>
+      <div class="step-action">
+        <div class="row">
+          <button id="btn-push-on" disabled>Activar notificaciones</button>
+          <button id="btn-push" disabled>Envíame un push</button>
+        </div>
+        <p id="push-hint" class="muted"></p>
+        <div class="links">
+          <a class="btn ghost" data-link="push" target="_blank" rel="noopener">Ver la automation ↗</a>
+        </div>
+      </div>
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
           <li>Web push usa el plugin <code>webPushPlugin.js</code> con la public key (VAPID) del workspace y un service worker servido desde este dominio (<code>cio-webpush-sw.js</code>).</li>
           <li>Solo se puede pedir permiso a personas identificadas, y siempre desde un clic.</li>
-          <li>El link del push apunta a la página de métricas de ese mismo push en Customer.io.</li>
+          <li>El botón manda el evento <code>demo_push</code>; una automation responde con el push, cuyo link abre sus métricas en Customer.io.</li>
         </ul>
       </details>
     </section>
-    -->
   </main>
 
   <button type="button" id="btn-log-open" class="log-tab">Ver lo que la web le manda a Customer.io (<span id="log-count">0</span>)</button>

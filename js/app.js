@@ -234,10 +234,9 @@ function setupUi() {
 
 }
 
-// Web push (paso 5): el plugin oficial se carga solo si hay public key, y pide permiso con un clic.
+// Web push (paso 6): el plugin oficial se carga solo si hay public key, y pide permiso con un clic.
 async function setupWebPush() {
   const on = $("#btn-push-on"), push = $("#btn-push"), hint = $("#push-hint");
-  if (!cfg.vapidPublicKey) return; // sin key, los botones quedan deshabilitados con el aviso del HTML
   await new Promise((resolve) => {
     const s = document.createElement("script");
     s.src = "https://cdp.customer.io/v1/analytics-js/webPushPlugin.js";
@@ -326,8 +325,7 @@ function init() {
     $("#status").classList.add("ok");
     log("ready", { workspace: cfg.workspaceId });
     refreshUserInfo();
-    // Web push, fuera hasta que Customer.io lo habilite (ver la nota del paso 5 en index.html):
-    // setupWebPush().catch((err) => log("web push: ERROR", String(err), "err"));
+    setupWebPush().catch((err) => log("web push: ERROR", String(err), "err"));
   });
 }
 
