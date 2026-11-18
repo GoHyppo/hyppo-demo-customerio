@@ -13,6 +13,7 @@ window.CIO_CONFIG = {
     email: "https://fly.customer.io/workspaces/186015/journeys/automations/19",
     experimento: "https://fly.customer.io/workspaces/186015/experiments/1",
     inapp: "https://fly.customer.io/workspaces/186015/journeys/automations/17",
+    whatsapp: "https://fly.customer.io/workspaces/186015/journeys/automations/22",
   },
 
   // Web push: pegar acá la public key de Settings → Push → Web cuando Customer.io lo habilite.

@@ -91,9 +91,22 @@
       </dl>
     </section>
 
-    <!-- Web push (paso 5): ver la nota en index.html.
+    <section class="card">
+      <p class="caps">Paso 5 · WhatsApp con GoChat</p>
+      <h2>"El mismo journey sigue por WhatsApp, y el agente sabe con quién habla"</h2>
+      <dl>
+        <dt>Qué decir</dt>
+        <dd>Es el día 2 de la historia de Sofía en la landing: Customer.io manda una plantilla de WhatsApp por GoChat con el producto que le corresponde. El botón vuelve a la web identificada y la compra cuenta como conversión. Si responde, el agente de IA ya tiene su nombre, su nivel y el producto, y lo que pasa en el chat vuelve al perfil.</dd>
+        <dt>Qué hacer</dt>
+        <dd>En el paso 2, pedile al cliente su WhatsApp (con código de país, en Argentina 549 + área + número) o usá el tuyo, e identificate. Después "Envíame un WhatsApp": llega en unos segundos. Mostrá el botón "Ver producto" y respondé "Tengo una duda" para que conteste el agente.</dd>
+        <dt>Qué mostrar en Customer.io</dt>
+        <dd>"Ver la automation ↗": el webhook a GoChat y la conversión. "Ver tu perfil ↗" del paso 2: los eventos que mandó GoChat desde el chat.</dd>
+      </dl>
+    </section>
+
+    <!-- Web push (paso 6): ver la nota en index.html.
 <section class="card">
-      <p class="caps">Paso 5 · Web push</p>
+      <p class="caps">Paso 6 · Web push</p>
       <h2>Pendiente</h2>
       <p>Web push está en alpha en Customer.io y falta que lo habiliten en el workspace. Hasta entonces, los botones quedan deshabilitados: si preguntan, se puede contar que existe y que el clic en el push abre sus métricas.</p>
     </section>
@@ -105,6 +118,7 @@
         <li><strong>"Bloqueado" arriba a la derecha:</strong> bajá el bloqueador de anuncios y recargá.</li>
         <li><strong>El in-app no llega:</strong> la primera vez en un navegador puede tardar un minuto. Mientras tanto, mostrá la automation en Customer.io.</li>
         <li><strong>El banner azul no aparece, o muestra datos de una prueba anterior:</strong> cerralo con la ✕ y recargá: los banners de identificaciones anteriores salen de a uno, el más viejo primero. Si repetís la demo, conviene usar otro email.</li>
+        <li><strong>El WhatsApp no llega:</strong> revisá el formato del número (código de país, sin espacios; en Argentina con el 9). Meta no entrega plantillas de marketing a números de EE. UU. ni a quien recibió muchas hace poco: probá con tu número.</li>
         <li><strong>El email no llega:</strong> buscalo en spam; el remitente es <code>hello@hyppo.io</code>.</li>
       </ul>
     </section>

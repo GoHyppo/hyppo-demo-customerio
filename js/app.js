@@ -2,9 +2,9 @@ const cfg = window.CIO_CONFIG;
 const $ = (sel) => document.querySelector(sel);
 
 const PRODUCTS = [
-  { id: "remera-hyppo", name: "Remera Hyppo", price: 25 },
-  { id: "buzo-hyppo", name: "Buzo Hyppo", price: 64 },
-  { id: "gorra-hyppo", name: "Gorra Hyppo", price: 22 },
+  { id: "remera-hyppo", name: "Remera Hyppo", price: 25, frase: "la remera Hyppo" },
+  { id: "buzo-hyppo", name: "Buzo Hyppo", price: 64, frase: "el buzo Hyppo" },
+  { id: "gorra-hyppo", name: "Gorra Hyppo", price: 22, frase: "la gorra Hyppo" },
 ];
 
 function log(method, detail = "", kind = "") {
@@ -100,7 +100,7 @@ function send(label, promise, detail) {
 function renderProducts(highlight) {
   $("#products").innerHTML = PRODUCTS.map((p) => `
     <div class="product${p.id === highlight ? " highlight" : ""}" id="prod-${p.id}">
-      ${p.id === highlight ? '<span class="tag">Del email</span>' : ""}
+      ${p.id === highlight ? '<span class="tag">Para ti</span>' : ""}
       <div class="thumb">${p.name.split(" ")[0]}</div>
       <strong>${p.name}</strong>
       <span class="muted">USD ${p.price}</span>
@@ -125,6 +125,9 @@ function setupUi() {
     const id = "demo-" + f.email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const traits = { email: f.email.trim(), nivel: f.nivel };
     if (f.first_name) traits.first_name = f.first_name.trim();
+    // WhatsApp: solo dígitos con código de país, que es como GoChat identifica al contacto.
+    const whatsapp = (f.whatsapp || "").replace(/\D/g, "");
+    if (whatsapp) { traits.whatsapp = whatsapp; traits.phone = "+" + whatsapp; }
     await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits);
     // El banner lee nombre y nivel del evento: si los leyera del perfil, a veces Customer.io
     // arma el mensaje antes de guardar los atributos del identify y cae en los valores por defecto.
@@ -168,6 +171,18 @@ function setupUi() {
     const order = { order_id: `demo-${Date.now()}`, revenue: p.price, currency: "USD", products: [product] };
     send('track("Order Completed")', cioanalytics.track("Order Completed", order), order);
     e.target.textContent = "Comprado ✓";
+  });
+
+  $("#btn-whatsapp").addEventListener("click", () => {
+    const traits = cioanalytics.user?.().traits() || {};
+    if (!currentUserId()) { $("#whatsapp-hint").textContent = "Primero identifícate en el paso 2."; return; }
+    if (!traits.whatsapp) { $("#whatsapp-hint").textContent = "Agrega un WhatsApp en el paso 2 y vuelve a identificarte."; return; }
+    // El producto sigue la misma regla que el email: nuevo → remera; frecuente → buzo.
+    const nivel = traits.nivel || "nuevo";
+    const p = PRODUCTS.find((x) => x.id === (nivel === "nuevo" ? "remera-hyppo" : "buzo-hyppo"));
+    const props = { whatsapp: traits.whatsapp, first_name: traits.first_name || "", nivel, producto: p.id, producto_nombre: p.frase };
+    send('track("demo_whatsapp_solicitado")', cioanalytics.track("demo_whatsapp_solicitado", props), props);
+    $("#whatsapp-hint").textContent = `Listo: en unos segundos te llega un WhatsApp a +${traits.whatsapp}.`;
   });
 
   $("#btn-inapp").addEventListener("click", () => {
@@ -231,7 +246,9 @@ function handleEmailLanding() {
   const producto = params.get("producto");
   renderProducts(uid ? producto : null);
   if (!uid) return;
-  send(`identify("${uid}")`, cioanalytics.identify(uid), { origen: "link del email", utm_campaign: params.get("utm_campaign") });
+  const canal = params.get("utm_source") === "whatsapp" ? "WhatsApp" : "el email";
+  send(`identify("${uid}")`, cioanalytics.identify(uid), { origen: `link de ${canal}`, utm_campaign: params.get("utm_campaign") });
+  $("#from-email-canal").textContent = canal;
   $("#from-email-id").textContent = uid;
   $("#from-email").hidden = false;
   history.replaceState(null, "", location.pathname);

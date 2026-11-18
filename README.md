@@ -1,7 +1,7 @@
 # hyppo-demo-customerio
 
 Demo de Hyppo para mostrar Customer.io en una web, pensada para presentar en una reunión compartiendo
-pantalla. Es un recorrido guiado de cuatro pasos, cada uno con un botón que dispara algo real en el
+pantalla. Es un recorrido guiado de cinco pasos, cada uno con un botón que dispara algo real en el
 workspace y un link a dónde se ve en Customer.io. Sitio estático (HTML + JS, sin build) en GitHub
 Pages: <https://gohyppo.github.io/hyppo-demo-customerio/>. Push a `main` = deploy. Es la hermana de
 `hyppo-demo-braze`.
@@ -10,7 +10,7 @@ Workspace: **186015** ("Hyppo", cuenta de clientes `126155`, US).
 
 **Es el cierre de la landing <https://hyppo.io/customer-io-y-gochat/>** (repo `GoHyppo/hyppo_landing`,
 `src/components/CustomerIoGochat.astro`), que se presenta antes y termina en "Ahora en vivo" con los
-cuatro pasos de esta demo. Tienen que contar lo mismo: la clienta es Sofía, la tienda vende ropa (remera,
+cinco pasos de esta demo. Tienen que contar lo mismo: la clienta es Sofía, la tienda vende ropa (remera,
 buzo), el atributo es el **nivel de cliente** (`nuevo` / `frecuente`) y el texto va en español neutro
 (tú). Si cambia una, revisar la otra.
 
@@ -22,6 +22,7 @@ buzo), el atributo es el **nivel de cliente** (`nuevo` / `frecuente`) y el texto
 | 2 · Identificarse | `identify(id, {email, first_name, nivel})` + `track("demo_identificado")`, y recarga a los 15 s | Banner inline azul con nombre y nivel de cliente: automation 18 |
 | 3 · Email → web → conversión | `track("demo_email_solicitado", {nivel})` | Automation 19: rama por nivel (nuevo → email de la remera; frecuente → Experiment 1 de asunto sobre el email del buzo). El link vuelve a la web con `?uid=…&producto=…`; conversión `Order Completed` en 1 día |
 | 4 · In-app | `track("demo_inapp")` | Modal: automation 17 |
+| 5 · WhatsApp con GoChat | `identify` con `whatsapp` (dígitos) y `phone`; `track("demo_whatsapp_solicitado", {whatsapp, first_name, nivel, producto, producto_nombre})` | Automation 22: webhook al inbound webhook de GoChat, que crea el contacto, guarda `cio_id`, `nivel` y producto, y manda la plantilla. Conversión `Order Completed` en 1 día |
 
 El toggle **Notas técnicas** de arriba muestra el detalle de cada paso. El panel negro (arranca
 minimizado, se abre abajo a la derecha) muestra cada llamada a `cioanalytics` y se conserva entre recargas de
@@ -29,7 +30,7 @@ la misma pestaña.
 
 ## Web push (comentado)
 
-El paso 5 está comentado en `index.html`, `guia.html` y `js/app.js` (y en la landing) hasta que
+El paso 6 (web push) está comentado en `index.html`, `guia.html` y `js/app.js` (y en la landing) hasta que
 Customer.io habilite web push en el workspace; se pidió a soporte. Ya están el código del plugin
 (`setupWebPush`), el service worker (`cio-webpush-sw.js`) y la automation 21 en borrador (trigger
 `demo_push`, sin acciones). Para reactivarlo: generar las keys en Settings → Push → Web con el subject
@@ -64,6 +65,7 @@ de web push cuyo link abra sus métricas, y descomentar las tres partes.
 | Automation "Demo web · email por nivel con test de asunto" | 19 | Trigger `demo_email_solicitado`; rama True/False sobre la propiedad `nivel` del evento (`nuevo`); emails de Design Studio; conversión `Order Completed` en 1 día |
 | Experiment "Demo web · asunto del email del buzo" | 1 | 50/50 entre dos asuntos, conversión `Order Completed` en 1 día, ganador manual |
 | Automation "Demo web · in-app" | 17 | Trigger `demo_inapp`, in-app modal |
+| Automation "Demo web · WhatsApp por GoChat" | 22 | Trigger `demo_whatsapp_solicitado`; webhook `POST` al inbound webhook permanente de GoChat (`https://gochat.hyppo.io/api/iwh/…`, la URL está en el template 67) con teléfono, nombre, email, `cio_id`, nivel, producto y el sufijo del link; conversión `Order Completed` en 1 día |
 
 Lo que no es obvio:
 

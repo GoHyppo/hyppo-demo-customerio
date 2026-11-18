@@ -29,7 +29,7 @@
   </div>
 
   <div id="from-email" class="callout" hidden>
-    <strong>Llegaste desde el email.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Compra el producto destacado y mira la conversión en la automation.
+    <strong>Llegaste desde <span id="from-email-canal">el email</span>.</strong> Customer.io registró el clic y la web te identificó como <code id="from-email-id"></code>. Compra el producto destacado y mira la conversión en la automation.
   </div>
 
   <main>
@@ -57,6 +57,8 @@
       <form id="form-user">
         <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="sofia@gmail.com"></label>
         <label>Nombre <input name="first_name" placeholder="Sofía"></label>
+        <label>WhatsApp (opcional, para el paso 5) <input name="whatsapp" type="tel" inputmode="tel" placeholder="5491155550142"></label>
+        <p class="muted">Con código de país y sin espacios. En Argentina, 549 + código de área + número.</p>
         <label>Nivel de cliente
           <select name="nivel"><option>nuevo</option><option selected>frecuente</option></select>
         </label>
@@ -120,9 +122,29 @@
       </details>
     </section>
 
-    <!-- Web push (paso 5): fuera hasta que Customer.io lo habilite en el workspace (alpha). Para reactivarlo: descomentar esta sección, la llamada a setupWebPush() en js/app.js, pegar la public key en js/config.js y crear la acción en la automation 21. La landing (hyppo_landing) tiene el mismo paso comentado.
+    <section class="card step" id="paso-5">
+      <p class="caps">Paso 5 · WhatsApp con GoChat</p>
+      <h2>El mismo journey, por WhatsApp</h2>
+      <p>Customer.io te envía una plantilla de WhatsApp por GoChat con el producto de tu nivel. El botón vuelve a esta página ya identificado; si respondes, el agente de IA de GoChat sabe quién eres y qué te ofrecimos, y lo que pasa en el chat vuelve a tu perfil en Customer.io.</p>
+      <div class="row">
+        <button id="btn-whatsapp">Envíame un WhatsApp</button>
+        <a class="btn ghost" data-link="whatsapp" target="_blank" rel="noopener">Ver la automation ↗</a>
+      </div>
+      <p id="whatsapp-hint" class="muted"></p>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
+        <ul>
+          <li>El botón manda el evento <code>demo_whatsapp_solicitado</code> con el teléfono, el nombre, el nivel y el producto. Una automation responde con un webhook al <em>inbound webhook</em> de GoChat.</li>
+          <li>GoChat busca o crea el contacto por el teléfono, guarda <code>cio_id</code>, <code>nivel</code> y el producto como campos del contacto, y envía la plantilla aprobada por Meta.</li>
+          <li>El botón de la plantilla lleva <code>?uid={{customer.id}}</code>: la compra cuenta como conversión de la automation (<code>Order Completed</code> en 1 día).</li>
+          <li>Si la persona responde, GoChat manda eventos a Customer.io (como <code>whatsapp_respondido</code>) identificándola por <code>cio_id</code>.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- Web push (paso 6): fuera hasta que Customer.io lo habilite en el workspace (alpha). Para reactivarlo: descomentar esta sección, la llamada a setupWebPush() en js/app.js, pegar la public key en js/config.js y crear la acción en la automation 21. La landing (hyppo_landing) tiene el mismo paso comentado.
 <section class="card step" id="paso-5">
-      <p class="caps">Paso 5 · Web push</p>
+      <p class="caps">Paso 6 · Web push</p>
       <h2>Una notificación en el navegador</h2>
       <p>Activas las notificaciones, pides un push y, al tocarlo, te lleva a sus métricas en Customer.io.</p>
       <div class="row">
