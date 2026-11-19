@@ -261,6 +261,9 @@ function setupUi() {
     if (!p) return;
     const product = { product_id: p.id, name: p.name, price: p.price, quantity: 1 };
     if (cartId) {
+      // Sin identificar no hay a quién mandarle el email del carrito abandonado.
+      if (!currentUserId()) return blocked(e.target, $("#cart-hint"), "Primero identifícate en el paso 2: el recordatorio del carrito llega por email.");
+      $("#cart-hint").textContent = `Agregaste ${p.frase} al carrito. Si no compras en 1 minuto, Customer.io te lo recuerda por email.`;
       send('track("Product Added")', cioanalytics.track("Product Added", product), product, { btn: e.target, human: `${p.name} al carrito` });
       return;
     }

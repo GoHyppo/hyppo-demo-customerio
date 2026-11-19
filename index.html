@@ -107,6 +107,10 @@
         </div>
       </div>
       <div class="products" id="products"></div>
+      <div class="cart-row">
+        <p id="cart-hint" class="muted">Si agregas un producto al carrito y no lo compras en 1 minuto, Customer.io te lo recuerda por email.</p>
+        <a class="btn ghost" data-link="carrito" target="_blank" rel="noopener">Ver el carrito abandonado ↗</a>
+      </div>
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
@@ -116,6 +120,7 @@
           <li>El link del mail lleva <code>?uid={{customer.id}}</code> y UTMs. Al llegar, la web hace <code>identify(uid)</code>, así el navegador queda asociado a la persona aunque sea otro dispositivo.</li>
           <li>La automation tiene como objetivo de conversión el evento <code>Order Completed</code> dentro de 1 día de recibir el mail.</li>
           <li>Customer.io trackea aperturas y clics del mail por su cuenta: se ven en las métricas del email.</li>
+          <li>Carrito abandonado: "Al carrito" manda <code>Product Added</code>. Otra automation espera 1 minuto y manda un email con ese producto; si en ese tiempo llega <code>Order Completed</code>, la persona sale del journey y el email no se envía. La compra cuenta como conversión.</li>
         </ul>
       </details>
     </section>

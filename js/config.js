@@ -14,6 +14,7 @@ window.CIO_CONFIG = {
     experimento: "https://fly.customer.io/workspaces/186015/experiments/1",
     inapp: "https://fly.customer.io/workspaces/186015/journeys/automations/17/overview/workflow/actions",
     whatsapp: "https://fly.customer.io/workspaces/186015/journeys/automations/22/overview/workflow/actions",
+    carrito: "https://fly.customer.io/workspaces/186015/journeys/automations/23/overview/workflow/actions",
     push: "https://fly.customer.io/workspaces/186015/journeys/automations/21/overview/workflow/actions",
   },
 
