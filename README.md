@@ -27,7 +27,9 @@ buzo), el atributo es el **nivel de cliente** (`nuevo` / `frecuente`) y el texto
 
 El toggle **Notas técnicas** de arriba muestra el detalle de cada paso. El panel negro (arranca
 minimizado, se abre abajo a la derecha) muestra cada llamada a `cioanalytics` y se conserva entre recargas de
-la misma pestaña.
+la misma pestaña. Con el panel minimizado, cada llamada aparece unos segundos como aviso a la
+derecha, y cada botón muestra el estado del clic (enviando, listo ✓ o error): todo pasa por `send()` en
+`js/app.js`. Los links "Ver la automation" abren el flujo (`/overview/workflow/actions`).
 
 ## Web push
 

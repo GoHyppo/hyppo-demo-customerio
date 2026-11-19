@@ -13,6 +13,8 @@ function log(method, detail = "", kind = "") {
   li.innerHTML = `<span class="t">${new Date().toLocaleTimeString()}</span> <code>${method}</code> ${detail ? `<pre>${typeof detail === "string" ? detail : JSON.stringify(detail, null, 2)}</pre>` : ""}`;
   $("#log").prepend(li);
   countLog();
+  const tab = $("#btn-log-open");
+  tab.classList.remove("pulse"); void tab.offsetWidth; tab.classList.add("pulse");
   console.log("[cio]", method, detail);
 }
 
@@ -131,12 +133,65 @@ function refreshUserInfo() {
   $("#anon-id").textContent = user.anonymousId() || "—";
 }
 
-// Cada llamada devuelve una promesa; si falla (bloqueador, key mala), lo marca en el log.
-function send(label, promise, detail) {
+// Cada clic tiene que verse: el botón pasa por "enviando" y "listo ✓" (o error), y con el panel
+// minimizado aparece un aviso a la derecha con el evento. Si la llamada falla (bloqueador, key mala),
+// queda marcado en el log.
+function send(label, promise, detail, { btn, human } = {}) {
   log(label, detail);
-  return Promise.resolve(promise)
-    .then(() => refreshUserInfo())
-    .catch((err) => log(`${label}: ERROR`, String(err), "err"));
+  const t = toast(label, human);
+  busy(btn);
+  return Promise.all([Promise.resolve(promise), new Promise((r) => setTimeout(r, 300))])
+    .then(() => { refreshUserInfo(); done(btn); })
+    .catch((err) => { log(`${label}: ERROR`, String(err), "err"); toastError(t); done(btn, "err"); });
+}
+
+function busy(btn) {
+  if (!btn) return;
+  btn.dataset.label ??= btn.textContent;
+  btn.dataset.state = "busy";
+  btn.disabled = true;
+}
+// "Listo ✓" por 2,5 s y vuelve al texto original; data-keep lo deja fijo (como "Comprado ✓").
+function done(btn, state = "done") {
+  if (!btn) return;
+  btn.dataset.state = state;
+  btn.textContent = state === "err" ? "No se pudo enviar" : btn.dataset.done || "Enviado ✓";
+  if (state === "done" && "keep" in btn.dataset) return;
+  btn.disabled = false;
+  setTimeout(() => { delete btn.dataset.state; btn.textContent = btn.dataset.label; }, 2500);
+}
+// Falta un paso previo (por ejemplo, identificarse): el botón lo marca y el aviso dice qué hacer.
+function blocked(btn, hint, msg) {
+  hint.textContent = msg;
+  btn.dataset.label ??= btn.textContent;
+  btn.dataset.state = "err";
+  setTimeout(() => delete btn.dataset.state, 2500);
+}
+
+// Avisos a la derecha cuando el panel está minimizado: hasta 3, cada uno se va solo a los 4 s.
+function toast(label, human) {
+  if (!document.body.classList.contains("log-closed")) return null;
+  const box = $("#toasts");
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = `<code></code><span></span>`;
+  el.querySelector("code").textContent = label;
+  el.querySelector("span").textContent = human || "Enviado a Customer.io";
+  box.prepend(el);
+  while (box.children.length > 3) box.lastElementChild.remove();
+  el._timer = setTimeout(() => dismiss(el), 4000);
+  return el;
+}
+function toastError(el) {
+  if (!el) return;
+  el.classList.add("err");
+  el.querySelector("span").textContent = "No llegó a Customer.io: mira el panel";
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => dismiss(el), 8000);
+}
+function dismiss(el) {
+  el.classList.add("out");
+  setTimeout(() => el.remove(), 200);
 }
 
 function renderProducts(highlight) {
@@ -147,8 +202,8 @@ function renderProducts(highlight) {
       <strong>${p.name}</strong>
       <span class="muted">USD ${p.price}</span>
       <div class="row">
-        <button class="ghost small" data-cart="${p.id}">Al carrito</button>
-        <button class="small" data-buy="${p.id}">Comprar</button>
+        <button class="ghost small" data-cart="${p.id}" data-done="Agregado ✓">Al carrito</button>
+        <button class="small" data-buy="${p.id}" data-done="Comprado ✓" data-keep>Comprar</button>
       </div>
     </div>`).join("");
 }
@@ -171,11 +226,12 @@ function setupUi() {
     $("#whatsapp-error").hidden = whatsapp !== null;
     if (whatsapp === null) { $("#f-whatsapp").focus(); return; }
     if (whatsapp) { traits.whatsapp = whatsapp; traits.phone = "+" + whatsapp; }
-    await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits);
+    const btn = e.target.querySelector("button[type=submit]");
+    await send(`identify("${id}")`, cioanalytics.identify(id, traits), traits, { btn, human: "Perfil creado o actualizado" });
     // El banner lee nombre y nivel del evento: si los leyera del perfil, a veces Customer.io
     // arma el mensaje antes de guardar los atributos del identify y cae en los valores por defecto.
     const props = { first_name: traits.first_name || "", nivel: traits.nivel };
-    await send('track("demo_identificado")', cioanalytics.track("demo_identificado", props), props);
+    await send('track("demo_identificado")', cioanalytics.track("demo_identificado", props), props, { human: "Dispara el banner identificado" });
     // Un inline ocupa su lugar hasta que se cierra: el banner nuevo entra al recargar la página.
     reloadIn(15, "Customer.io está armando tu banner");
   });
@@ -188,15 +244,12 @@ function setupUi() {
     reloadIn(1, "Empezando de nuevo");
   });
 
-  $("#btn-email").addEventListener("click", () => {
+  $("#btn-email").addEventListener("click", (e) => {
     const email = cioanalytics.user?.().traits()?.email;
-    if (!currentUserId() || !email) {
-      $("#email-hint").textContent = "Primero identifícate con tu email en el paso 2.";
-      return;
-    }
+    if (!currentUserId() || !email) return blocked(e.currentTarget, $("#email-hint"), "Primero identifícate con tu email en el paso 2.");
     // El nivel viaja en el evento: la automation elige la rama con él (nuevo → remera; frecuente → buzo con test de asunto).
     const nivel = cioanalytics.user().traits()?.nivel || "nuevo";
-    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado", { nivel }), { email, nivel });
+    send('track("demo_email_solicitado")', cioanalytics.track("demo_email_solicitado", { nivel }), { email, nivel }, { btn: e.currentTarget, human: `Email para cliente ${nivel}` });
     const producto = nivel === "nuevo" ? "la remera" : "el buzo";
     $("#email-hint").textContent = `Listo: en uno o dos minutos llega a ${email}. Como cliente ${nivel}, el email te ofrece ${producto}.`;
   });
@@ -208,28 +261,28 @@ function setupUi() {
     if (!p) return;
     const product = { product_id: p.id, name: p.name, price: p.price, quantity: 1 };
     if (cartId) {
-      send('track("Product Added")', cioanalytics.track("Product Added", product), product);
+      send('track("Product Added")', cioanalytics.track("Product Added", product), product, { btn: e.target, human: `${p.name} al carrito` });
       return;
     }
     const order = { order_id: `demo-${Date.now()}`, revenue: p.price, currency: "USD", products: [product] };
-    send('track("Order Completed")', cioanalytics.track("Order Completed", order), order);
-    e.target.textContent = "Comprado ✓";
+    send('track("Order Completed")', cioanalytics.track("Order Completed", order), order, { btn: e.target, human: `Compra: ${p.name}, USD ${p.price}` });
   });
 
-  $("#btn-whatsapp").addEventListener("click", () => {
+  $("#btn-whatsapp").addEventListener("click", (e) => {
+    const btn = e.currentTarget, hint = $("#whatsapp-hint");
     const traits = cioanalytics.user?.().traits() || {};
-    if (!currentUserId()) { $("#whatsapp-hint").textContent = "Primero identifícate en el paso 2."; return; }
-    if (!traits.whatsapp) { $("#whatsapp-hint").textContent = "Agrega un WhatsApp en el paso 2 y vuelve a identificarte."; return; }
+    if (!currentUserId()) return blocked(btn, hint, "Primero identifícate en el paso 2.");
+    if (!traits.whatsapp) return blocked(btn, hint, "Agrega un WhatsApp en el paso 2 y vuelve a identificarte.");
     // El producto sigue la misma regla que el email: nuevo → remera; frecuente → buzo.
     const nivel = traits.nivel || "nuevo";
     const p = PRODUCTS.find((x) => x.id === (nivel === "nuevo" ? "remera-hyppo" : "buzo-hyppo"));
     const props = { whatsapp: traits.whatsapp, first_name: traits.first_name || "", nivel, producto: p.id, producto_nombre: p.frase };
-    send('track("demo_whatsapp_solicitado")', cioanalytics.track("demo_whatsapp_solicitado", props), props);
-    $("#whatsapp-hint").textContent = `Listo: en unos segundos te llega un WhatsApp a +${traits.whatsapp}.`;
+    send('track("demo_whatsapp_solicitado")', cioanalytics.track("demo_whatsapp_solicitado", props), props, { btn, human: `WhatsApp a +${traits.whatsapp} por GoChat` });
+    hint.textContent = `Listo: en unos segundos te llega un WhatsApp a +${traits.whatsapp}.`;
   });
 
-  $("#btn-inapp").addEventListener("click", () => {
-    send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "La automation responde con un modal en unos segundos");
+  $("#btn-inapp").addEventListener("click", (e) => {
+    send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "La automation responde con un modal en unos segundos", { btn: e.currentTarget, human: "Llega un modal en unos segundos" });
   });
 
 }
@@ -260,23 +313,22 @@ async function setupWebPush() {
     push.disabled = !subscribed;
     hint.textContent = subscribed
       ? "Notificaciones activadas en este navegador."
-      : "Primero identifícate en el paso 2; después activa las notificaciones.";
+      : currentUserId() ? "" : "Primero identifícate en el paso 2; después activa las notificaciones.";
   }
   on.addEventListener("click", () => {
-    if (!currentUserId()) { hint.textContent = "Primero identifícate en el paso 2."; return; }
-    on.disabled = true;
+    if (!currentUserId()) return blocked(on, hint, "Primero identifícate en el paso 2.");
     // subscribe() va primero y sin await antes, para que Safari muestre el pedido de permiso.
-    cioanalytics.webPush.subscribe()
-      .then(() => { log("webPush.subscribe()", "El navegador quedó como dispositivo web en tu perfil"); return refresh(); })
+    const sub = cioanalytics.webPush.subscribe();
+    send("webPush.subscribe()", sub, "El navegador quedó como dispositivo web en tu perfil", { btn: on, human: "Navegador guardado en tu perfil" });
+    sub.then(refresh)
       .catch((err) => {
-        on.disabled = false;
         hint.textContent = Notification.permission === "denied"
           ? "Las notificaciones están bloqueadas: permítelas en la configuración del navegador y vuelve a intentar."
           : String(err.message || err);
       });
   });
   push.addEventListener("click", () => {
-    send('track("demo_push")', cioanalytics.track("demo_push"), "La automation responde con un web push en unos segundos");
+    send('track("demo_push")', cioanalytics.track("demo_push"), "La automation responde con un web push en unos segundos", { btn: push, human: "Llega un push en unos segundos" });
   });
   await refresh();
 }

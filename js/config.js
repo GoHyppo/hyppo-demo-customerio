@@ -9,12 +9,12 @@ window.CIO_CONFIG = {
   links: {
     people: "https://fly.customer.io/workspaces/186015/journeys/people",
     bannerAnonimo: "https://fly.customer.io/workspaces/186015/journeys/anonymous/2",
-    bannerIdentificado: "https://fly.customer.io/workspaces/186015/journeys/automations/18",
-    email: "https://fly.customer.io/workspaces/186015/journeys/automations/19",
+    bannerIdentificado: "https://fly.customer.io/workspaces/186015/journeys/automations/18/overview/workflow/actions",
+    email: "https://fly.customer.io/workspaces/186015/journeys/automations/19/overview/workflow/actions",
     experimento: "https://fly.customer.io/workspaces/186015/experiments/1",
-    inapp: "https://fly.customer.io/workspaces/186015/journeys/automations/17",
-    whatsapp: "https://fly.customer.io/workspaces/186015/journeys/automations/22",
-    push: "https://fly.customer.io/workspaces/186015/journeys/automations/21",
+    inapp: "https://fly.customer.io/workspaces/186015/journeys/automations/17/overview/workflow/actions",
+    whatsapp: "https://fly.customer.io/workspaces/186015/journeys/automations/22/overview/workflow/actions",
+    push: "https://fly.customer.io/workspaces/186015/journeys/automations/21/overview/workflow/actions",
   },
 
   // Web push: la public key (VAPID) de Settings → Push → Web. Es pública, va commiteada.

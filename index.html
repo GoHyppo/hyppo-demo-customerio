@@ -173,7 +173,7 @@
       </div>
       <div class="step-action">
         <div class="row">
-          <button id="btn-push-on" disabled>Activar notificaciones</button>
+          <button id="btn-push-on" data-done="Notificaciones activadas ✓" data-keep disabled>Activar notificaciones</button>
           <button id="btn-push" disabled>Envíame un push</button>
         </div>
         <p id="push-hint" class="muted"></p>
@@ -192,6 +192,7 @@
     </section>
   </main>
 
+  <div id="toasts" role="status" aria-live="polite"></div>
   <button type="button" id="btn-log-open" class="log-tab">Ver lo que la web le manda a Customer.io (<span id="log-count">0</span>)</button>
   <aside class="log">
     <div class="log-head">
