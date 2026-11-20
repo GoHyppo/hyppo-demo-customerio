@@ -194,18 +194,32 @@ function dismiss(el) {
   setTimeout(() => el.remove(), 200);
 }
 
+// Cupones de la promoción in-app (paso 3): el link del modal trae ?cupon=… y vale para el producto destacado.
+const CUPONES = { BIENVENIDA15: 15, VUELVE20: 20 };
+let oferta = null; // { producto, cupon, pct }
+
+// Precio final de un producto: con descuento si es el de la oferta.
+function priceOf(p) {
+  if (oferta?.producto !== p.id) return { price: p.price };
+  const price = Math.round(p.price * (100 - oferta.pct)) / 100;
+  return { price, coupon: oferta.cupon, discount: Math.round((p.price - price) * 100) / 100 };
+}
+
 function renderProducts(highlight) {
-  $("#products").innerHTML = PRODUCTS.map((p) => `
+  $("#products").innerHTML = PRODUCTS.map((p) => {
+    const { price, coupon } = priceOf(p);
+    return `
     <div class="product${p.id === highlight ? " highlight" : ""}" id="prod-${p.id}">
       ${p.id === highlight ? '<span class="tag">Para ti</span>' : ""}
       <div class="thumb">${p.name.split(" ")[0]}</div>
       <strong>${p.name}</strong>
-      <span class="muted">USD ${p.price}</span>
+      <span class="muted">${coupon ? `<span class="price-old">USD ${p.price}</span> <strong>USD ${price.toFixed(2)}</strong> con ${coupon}` : `USD ${p.price}`}</span>
       <div class="row">
         <button class="ghost small" data-cart="${p.id}" data-done="Agregado ✓">Al carrito</button>
         <button class="small" data-buy="${p.id}" data-done="Comprado ✓" data-keep>Comprar</button>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 }
 
 function setupUi() {
@@ -267,8 +281,9 @@ function setupUi() {
       send('track("Product Added")', cioanalytics.track("Product Added", product), product, { btn: e.target, human: `${p.name} al carrito` });
       return;
     }
-    const order = { order_id: `demo-${Date.now()}`, revenue: p.price, currency: "USD", products: [product] };
-    send('track("Order Completed")', cioanalytics.track("Order Completed", order), order, { btn: e.target, human: `Compra: ${p.name}, USD ${p.price}` });
+    const { price, coupon, discount } = priceOf(p);
+    const order = { order_id: `demo-${Date.now()}`, revenue: price, currency: "USD", products: [{ ...product, price }], ...(coupon && { coupon, discount }) };
+    send('track("Order Completed")', cioanalytics.track("Order Completed", order), order, { btn: e.target, human: `Compra: ${p.name}, USD ${price.toFixed(2)}${coupon ? ` con ${coupon}` : ""}` });
   });
 
   $("#btn-whatsapp").addEventListener("click", (e) => {
@@ -338,6 +353,8 @@ function handleEmailLanding() {
   const params = new URLSearchParams(location.search);
   const uid = params.get("uid");
   const producto = params.get("producto");
+  const cupon = params.get("cupon");
+  if (uid && CUPONES[cupon]) oferta = { producto, cupon, pct: CUPONES[cupon] };
   renderProducts(uid ? producto : null);
   if (!uid) return;
   const canal = { whatsapp: "WhatsApp", inapp: "el mensaje in-app" }[params.get("utm_source")] || "el email";

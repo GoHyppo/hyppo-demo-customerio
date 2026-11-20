@@ -29,7 +29,7 @@
         <li><strong>Hacé el recorrido una vez con tu email.</strong> El in-app tarda hasta un minuto en llegar la primera vez a cada navegador; después es instantáneo.</li>
         <li>Abrí el panel de abajo a la derecha y tocá <strong>Empezar de nuevo</strong> para arrancar la reunión como visitante anónimo.</li>
         <li>Dejá Customer.io abierto y logueado en otra pestaña: los links "↗" de cada paso abren ahí.</li>
-        <li>Tené a mano tu casilla de email para el paso 3.</li>
+        <li>Tené a mano tu casilla de email para el paso 4.</li>
       </ol>
       <p class="muted">La demo usa el workspace "Hyppo" (186015). Todo lo que pase en la reunión queda en ese workspace, con perfiles <code>demo-…</code>.</p>
     </section>
@@ -54,40 +54,40 @@
       <figure><img src="assets/guia/2-identificado.png" alt="Banner azul con el nombre y el nivel de cliente de la persona identificada"></figure>
       <dl>
         <dt>Qué decir</dt>
-        <dd>Al loguearse, todo lo que hizo como anónimo pasa a su perfil. El banner se arma con sus datos: si cambia el nivel de cliente, cambia el mensaje.</dd>
+        <dd>Al loguearse, todo lo que hizo como anónimo pasa a su perfil. El banner se arma con sus datos: si cambia el nivel de cliente, cambia el mensaje. Y el mismo registro dispara la promoción del paso siguiente.</dd>
         <dt>Qué hacer</dt>
-        <dd>Completá email, nombre y nivel de cliente y tocá "Identificarme". La página avisa y se recarga en 15 segundos con el banner azul, que queda hasta que lo cerrás con la ✕.</dd>
+        <dd>Completá email, nombre y nivel de cliente y tocá "Identificarme". La página avisa y se recarga en 15 segundos con el banner azul, que queda hasta que lo cerrás con la ✕. Unos segundos después aparece la promoción (paso 3): no la cierres antes de contar el banner.</dd>
         <dt>Qué mostrar en Customer.io</dt>
         <dd>"Ver tu perfil ↗": el perfil recién creado, con los atributos y la actividad de antes de identificarse. "Ver el banner identificado ↗": la automation que lo manda.</dd>
       </dl>
     </section>
 
     <section class="card">
-      <p class="caps">Paso 3 · Email → web → conversión</p>
-      <h2>"Un email distinto para cada cliente, que trae ventas y se puede medir"</h2>
-      <figure><img src="assets/guia/3-email.png" alt="El email de la demo con el botón Ver el buzo Hyppo"></figure>
-      <figure><img src="assets/guia/3-landing.png" alt="La demo al volver desde el email, con el producto destacado"></figure>
-      <dl>
-        <dt>Qué decir</dt>
-        <dd>Una acción en la web dispara un email, y Customer.io elige qué mandar según el nivel de cliente: a los nuevos les ofrece la remera; a los frecuentes, el buzo. Encima, el email del buzo está en un test A/B de asunto: la mitad recibe uno y la mitad otro, y Customer.io dice cuál vende más. El link vuelve a la web reconociendo a la persona, aunque abra el mail en otro dispositivo.</dd>
-        <dt>Qué hacer</dt>
-        <dd>"Envíame el email", abrí el mail (llega en uno o dos minutos), tocá el botón y comprá el producto destacado. Para mostrar las dos ramas, identificate primero como frecuente y después, con otro email, como nuevo.</dd>
-        <dd><strong>Carrito abandonado:</strong> tocá "Al carrito" en el buzo y seguí con los pasos 4 y 5; al minuto llega el email "Buzo Hyppo sigue en tu carrito". Para mostrar la salida, agregá la remera y comprala antes de que pase el minuto: en la automation se ve que la persona salió por conversión y el email no salió. La frase: "se frena solo si compra".</dd>
-        <dt>Qué mostrar en Customer.io</dt>
-        <dd>"Ver la automation ↗": la rama por nivel, el test y las conversiones de cada email. "Ver el test A/B ↗": los dos asuntos, cuánta gente recibió cada uno y las compras de cada lado. "Ver el carrito abandonado ↗": la espera de 1 minuto, el email y la salida por compra.</dd>
-      </dl>
-    </section>
-
-    <section class="card">
-      <p class="caps">Paso 4 · In-app</p>
+      <p class="caps">Paso 3 · In-app</p>
       <h2>"Apenas sabe quién eres, te ofrece lo tuyo"</h2>
       <dl>
         <dt>Qué decir</dt>
         <dd>El mismo registro que cambió el banner dispara un mensaje dentro de la web con una promoción para su nivel: a los nuevos, 15% en la remera; a los frecuentes, 20% en el buzo y envío gratis. Es un solo mensaje que se arma con los datos del cliente, sin tocar código, y la compra que trae cuenta como conversión.</dd>
         <dt>Qué hacer</dt>
-        <dd>No hay botón: aparece solo después de identificarte en el paso 2, unos segundos después de que la página recarga. Tocá "Ver el buzo" (o "Ver la remera") y comprá el producto destacado.</dd>
+        <dd>No hay botón: aparece solo después de identificarte en el paso 2, unos segundos después de que la página recarga. Tocá "Ver el buzo" (o "Ver la remera"): la web vuelve con el producto destacado y el precio con el cupón aplicado (USD 64 → 51,20 con VUELVE20). Comprá: la compra llega a Customer.io con el cupón y el descuento.</dd>
         <dt>Qué mostrar en Customer.io</dt>
-        <dd>"Ver la automation ↗": el trigger <code>demo_identificado</code>, la espera de 20 segundos, el mensaje con las dos promociones y la conversión.</dd>
+        <dd>"Ver la automation ↗": el trigger <code>demo_identificado</code>, la espera de 20 segundos, el mensaje con las dos promociones y la conversión. En el perfil, el evento <code>Order Completed</code> trae <code>coupon</code> y <code>discount</code>.</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <p class="caps">Paso 4 · Email → web → conversión</p>
+      <h2>"Un email distinto para cada cliente, que trae ventas y se puede medir"</h2>
+      <figure><img src="assets/guia/4-email.png" alt="El email de la demo con el botón Ver el buzo Hyppo"></figure>
+      <figure><img src="assets/guia/4-landing.png" alt="La demo al volver desde el email, con el producto destacado"></figure>
+      <dl>
+        <dt>Qué decir</dt>
+        <dd>Una acción en la web dispara un email, y Customer.io elige qué mandar según el nivel de cliente: a los nuevos les ofrece la remera; a los frecuentes, el buzo. Encima, el email del buzo está en un test A/B de asunto: la mitad recibe uno y la mitad otro, y Customer.io dice cuál vende más. El link vuelve a la web reconociendo a la persona, aunque abra el mail en otro dispositivo.</dd>
+        <dt>Qué hacer</dt>
+        <dd>"Envíame el email", abrí el mail (llega en uno o dos minutos), tocá el botón y comprá el producto destacado. Para mostrar las dos ramas, identificate primero como frecuente y después, con otro email, como nuevo.</dd>
+        <dd><strong>Carrito abandonado:</strong> tocá "Al carrito" en el buzo y seguí con el paso 5; al minuto llega el email "Buzo Hyppo sigue en tu carrito". Para mostrar la salida, agregá la remera y comprala antes de que pase el minuto: en la automation se ve que la persona salió por conversión y el email no salió. La frase: "se frena solo si compra".</dd>
+        <dt>Qué mostrar en Customer.io</dt>
+        <dd>"Ver la automation ↗": la rama por nivel, el test y las conversiones de cada email. "Ver el test A/B ↗": los dos asuntos, cuánta gente recibió cada uno y las compras de cada lado. "Ver el carrito abandonado ↗": la espera de 1 minuto, el email y la salida por compra.</dd>
       </dl>
     </section>
 

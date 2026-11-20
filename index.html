@@ -34,6 +34,28 @@
   </div></div>
 
   <main class="wrap">
+    <section class="card shop" id="tienda">
+      <div class="shop-head">
+        <div>
+          <p class="caps">La tienda</p>
+          <h2>Tienda Hyppo</h2>
+        </div>
+        <p class="muted">La web del cliente. Todos los canales de la demo traen de vuelta a esta grilla, y cada compra cuenta como conversión del mensaje que la trajo.</p>
+      </div>
+      <div class="products" id="products"></div>
+      <div class="cart-row">
+        <p id="cart-hint" class="muted">Si agregas un producto al carrito y no lo compras en 1 minuto, Customer.io te lo recuerda por email.</p>
+        <a class="btn ghost" data-link="carrito" target="_blank" rel="noopener">Ver el carrito abandonado ↗</a>
+      </div>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
+        <ul>
+          <li>"Comprar" manda <code>Order Completed</code> con <code>revenue</code>, el producto y, si llegaste con una promoción, <code>coupon</code> y <code>discount</code>. Es el objetivo de conversión de todas las automations de la demo.</li>
+          <li>Carrito abandonado: "Al carrito" manda <code>Product Added</code>. Otra automation espera 1 minuto y manda un email con ese producto; si en ese tiempo llega <code>Order Completed</code>, la persona sale del journey y el email no se envía. La compra cuenta como conversión.</li>
+        </ul>
+      </details>
+    </section>
+
     <section class="card step" id="paso-1">
       <div class="step-body">
         <p class="caps"><span class="num">1</span>Visitante anónimo</p>
@@ -60,11 +82,11 @@
       <div class="step-body">
         <p class="caps"><span class="num">2</span>Identificarse</p>
         <h2>Login o registro</h2>
-        <p>Al identificarte, el banner cambia por uno con tu nombre y tu nivel de cliente.</p>
+        <p>Al identificarte, el banner cambia por uno con tu nombre y tu nivel de cliente, y enseguida llega la promoción del paso 3.</p>
       </div>
       <div class="step-action">
       <form id="form-user">
-        <label>Email (te llega el mail del paso 3) <input name="email" type="email" required placeholder="sofia@gmail.com"></label>
+        <label>Email (te llega el mail del paso 4) <input name="email" type="email" required placeholder="sofia@gmail.com"></label>
         <label>Nombre <input name="first_name" placeholder="Sofía"></label>
         <!-- div y no label: el selector de país de intl-tel-input es un botón y no puede ir dentro del label. -->
         <div class="field">
@@ -86,7 +108,7 @@
         <summary>Notas técnicas</summary>
         <ul>
           <li><code>identify(id, {email, first_name, nivel})</code> crea o actualiza el perfil. Lo que hiciste como anónimo se suma al perfil.</li>
-          <li>Después se manda el evento <code>demo_identificado</code>: dispara la automation del banner identificado (in-app inline, persistente, con Liquid <code>{{event.first_name}}</code> y <code>{{event.nivel}}</code>).</li>
+          <li>Después se manda el evento <code>demo_identificado</code>: dispara dos automations: la del banner identificado (in-app inline, persistente, con Liquid <code>{{event.first_name}}</code> y <code>{{event.nivel}}</code>) y la de la promoción del paso 3.</li>
           <li>"Empezar de nuevo" (en el panel negro) es <code>reset()</code>: vuelve a ser un visitante anónimo con un <code>anonymousId</code> nuevo, y limpia el panel.</li>
         </ul>
       </details>
@@ -94,40 +116,7 @@
 
     <section class="card step" id="paso-3">
       <div class="step-body">
-        <p class="caps"><span class="num">3</span>Email → web → conversión</p>
-        <h2>Un email distinto según el nivel</h2>
-        <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado. Si lo compras, cuenta como conversión.</p>
-      </div>
-      <div class="step-action">
-        <div><button id="btn-email">Envíame el email</button></div>
-        <p id="email-hint" class="muted"></p>
-        <div class="links">
-          <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation ↗</a>
-          <a class="btn ghost" data-link="experimento" target="_blank" rel="noopener">Ver el test A/B ↗</a>
-        </div>
-      </div>
-      <div class="products" id="products"></div>
-      <div class="cart-row">
-        <p id="cart-hint" class="muted">Si agregas un producto al carrito y no lo compras en 1 minuto, Customer.io te lo recuerda por email.</p>
-        <a class="btn ghost" data-link="carrito" target="_blank" rel="noopener">Ver el carrito abandonado ↗</a>
-      </div>
-      <details class="notes">
-        <summary>Notas técnicas</summary>
-        <ul>
-          <li>El evento <code>demo_email_solicitado</code> lleva el nivel como propiedad. La automation tiene una rama True/False sobre ese dato (<code>nivel = nuevo</code>): los nuevos reciben el email de la remera; los frecuentes pasan por un <em>Experiment</em> que reparte 50/50 entre dos asuntos del email del buzo.</li>
-          <li>El Experiment mide como conversión <code>Order Completed</code> dentro de 1 día y la decisión del ganador es manual. Customer.io reemplazó los A/B clásicos de automation por Experiments.</li>
-          <li>Los emails están armados en Design Studio y salen desde <code>hello@hyppo.io</code>.</li>
-          <li>El link del mail lleva <code>?uid={{customer.id}}</code> y UTMs. Al llegar, la web hace <code>identify(uid)</code>, así el navegador queda asociado a la persona aunque sea otro dispositivo.</li>
-          <li>La automation tiene como objetivo de conversión el evento <code>Order Completed</code> dentro de 1 día de recibir el mail.</li>
-          <li>Customer.io trackea aperturas y clics del mail por su cuenta: se ven en las métricas del email.</li>
-          <li>Carrito abandonado: "Al carrito" manda <code>Product Added</code>. Otra automation espera 1 minuto y manda un email con ese producto; si en ese tiempo llega <code>Order Completed</code>, la persona sale del journey y el email no se envía. La compra cuenta como conversión.</li>
-        </ul>
-      </details>
-    </section>
-
-    <section class="card step" id="paso-4">
-      <div class="step-body">
-        <p class="caps"><span class="num">4</span>In-app</p>
+        <p class="caps"><span class="num">3</span>In-app</p>
         <h2>Una promoción según tu nivel</h2>
         <p>Cuando te identificas en el paso 2, Customer.io te muestra un mensaje dentro de la web con una promoción para tu nivel: 15% en la remera si eres cliente nuevo; 20% en el buzo y envío gratis si eres frecuente. Aparece unos segundos después de que la página recarga. El botón te lleva al producto y la compra cuenta como conversión.</p>
       </div>
@@ -143,6 +132,33 @@
           <li>La automation espera 20 segundos antes de mostrarlo, para que no lo corte la recarga de la página.</li>
           <li>El botón vuelve a esta página con <code>?uid=…&amp;producto=…&amp;utm_source=inapp</code>; la compra cuenta como conversión (<code>Order Completed</code> en 1 día).</li>
           <li>El plugin consulta despacio (cerca de una vez por minuto) hasta el primer mensaje; después pasa a tiempo real. Para la reunión conviene haberse identificado una vez antes.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="card step" id="paso-4">
+      <div class="step-body">
+        <p class="caps"><span class="num">4</span>Email → web → conversión</p>
+        <h2>Un email distinto según el nivel</h2>
+        <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado. Si lo compras, cuenta como conversión.</p>
+      </div>
+      <div class="step-action">
+        <div><button id="btn-email">Envíame el email</button></div>
+        <p id="email-hint" class="muted"></p>
+        <div class="links">
+          <a class="btn ghost" data-link="email" target="_blank" rel="noopener">Ver la automation ↗</a>
+          <a class="btn ghost" data-link="experimento" target="_blank" rel="noopener">Ver el test A/B ↗</a>
+        </div>
+      </div>
+      <details class="notes">
+        <summary>Notas técnicas</summary>
+        <ul>
+          <li>El evento <code>demo_email_solicitado</code> lleva el nivel como propiedad. La automation tiene una rama True/False sobre ese dato (<code>nivel = nuevo</code>): los nuevos reciben el email de la remera; los frecuentes pasan por un <em>Experiment</em> que reparte 50/50 entre dos asuntos del email del buzo.</li>
+          <li>El Experiment mide como conversión <code>Order Completed</code> dentro de 1 día y la decisión del ganador es manual. Customer.io reemplazó los A/B clásicos de automation por Experiments.</li>
+          <li>Los emails están armados en Design Studio y salen desde <code>hello@hyppo.io</code>.</li>
+          <li>El link del mail lleva <code>?uid={{customer.id}}</code> y UTMs. Al llegar, la web hace <code>identify(uid)</code>, así el navegador queda asociado a la persona aunque sea otro dispositivo.</li>
+          <li>La automation tiene como objetivo de conversión el evento <code>Order Completed</code> dentro de 1 día de recibir el mail.</li>
+          <li>Customer.io trackea aperturas y clics del mail por su cuenta: se ven en las métricas del email.</li>
         </ul>
       </details>
     </section>

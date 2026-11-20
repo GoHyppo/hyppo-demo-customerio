@@ -40,7 +40,11 @@ main { display: grid; gap: var(--gap); padding-block: var(--gap) 96px; container
 .step { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap) 48px; align-items: start; }
 .step-body, .step-action { display: grid; gap: var(--gap); align-content: start; }
 .step-body { gap: 8px; }
-.step > .products, .step > .cart-row, .step > details { grid-column: 1 / -1; }
+.step > details { grid-column: 1 / -1; }
+.shop { display: grid; gap: var(--gap); }
+.shop-head { display: flex; flex-wrap: wrap; gap: 8px 48px; align-items: end; justify-content: space-between; }
+.shop-head p.muted { margin: 0; max-width: 52ch; line-height: 1.5; }
+.price-old { text-decoration: line-through; }
 .cart-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
 .cart-row p { margin: 0; }
 .step p { margin: 0; line-height: 1.5; text-wrap: pretty; }
