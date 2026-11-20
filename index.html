@@ -130,7 +130,7 @@
         <ul>
           <li>Lo dispara el mismo evento del banner, <code>demo_identificado</code>, que lleva <code>first_name</code> y <code>nivel</code>. Un solo mensaje decide la promoción con Liquid (<code>{% if event.nivel == "frecuente" %}</code>).</li>
           <li>La automation espera 20 segundos antes de mostrarlo, para que no lo corte la recarga de la página.</li>
-          <li>El botón vuelve a esta página con <code>?uid=…&amp;producto=…&amp;utm_source=inapp</code>; la compra cuenta como conversión (<code>Order Completed</code> en 1 día).</li>
+          <li>El botón vuelve a esta página con <code>?uid=…&amp;producto=…&amp;cupon=…&amp;utm_source=inapp</code>: el producto destacado muestra el precio con el cupón, y la compra lleva <code>coupon</code> y <code>discount</code> y cuenta como conversión (<code>Order Completed</code> en 1 día).</li>
           <li>El plugin consulta despacio (cerca de una vez por minuto) hasta el primer mensaje; después pasa a tiempo real. Para la reunión conviene haberse identificado una vez antes.</li>
         </ul>
       </details>
@@ -140,7 +140,7 @@
       <div class="step-body">
         <p class="caps"><span class="num">4</span>Email → web → conversión</p>
         <h2>Un email distinto según el nivel</h2>
-        <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado. Si lo compras, cuenta como conversión.</p>
+        <p>Pide el email: te llega al correo del paso 2. La automation elige el contenido según tu nivel de cliente: a quien es nuevo le ofrece la remera; a quien es frecuente, el buzo, con dos asuntos distintos en un test A/B. El botón del correo vuelve a esta página ya identificado y con el producto destacado en la tienda. Si lo compras, cuenta como conversión.</p>
       </div>
       <div class="step-action">
         <div><button id="btn-email">Envíame el email</button></div>
@@ -191,7 +191,7 @@
       <div class="step-body">
         <p class="caps"><span class="num">6</span>Web push</p>
         <h2>Una notificación en el navegador</h2>
-        <p>Activas las notificaciones, pides un push y, al tocarlo, te lleva a sus métricas en Customer.io.</p>
+        <p>Activas las notificaciones, pides un push y, al tocarlo, te lleva a su automation en Customer.io.</p>
       </div>
       <div class="step-action">
         <div class="row">
@@ -208,7 +208,7 @@
         <ul>
           <li>Web push usa el plugin <code>webPushPlugin.js</code> con la public key (VAPID) del workspace y un service worker servido desde este dominio (<code>cio-webpush-sw.js</code>).</li>
           <li>Solo se puede pedir permiso a personas identificadas, y siempre desde un clic.</li>
-          <li>El botón manda el evento <code>demo_push</code>; una automation responde con el push, cuyo link abre sus métricas en Customer.io.</li>
+          <li>El botón manda el evento <code>demo_push</code>; una automation responde con el push, cuyo link abre su flujo en Customer.io.</li>
         </ul>
       </details>
     </section>
