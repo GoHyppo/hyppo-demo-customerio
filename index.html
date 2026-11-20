@@ -128,11 +128,10 @@
     <section class="card step" id="paso-4">
       <div class="step-body">
         <p class="caps"><span class="num">4</span>In-app</p>
-        <h2>Un mensaje sobre la web</h2>
-        <p>Haz algo en la web y Customer.io responde en el momento con un modal.</p>
+        <h2>Una promoción según tu nivel</h2>
+        <p>Cuando te identificas en el paso 2, Customer.io te muestra un mensaje dentro de la web con una promoción para tu nivel: 15% en la remera si eres cliente nuevo; 20% en el buzo y envío gratis si eres frecuente. Aparece unos segundos después de que la página recarga. El botón te lleva al producto y la compra cuenta como conversión.</p>
       </div>
       <div class="step-action">
-        <div><button id="btn-inapp">Disparar el in-app</button></div>
         <div class="links">
           <a class="btn ghost" data-link="inapp" target="_blank" rel="noopener">Ver la automation ↗</a>
         </div>
@@ -140,8 +139,10 @@
       <details class="notes">
         <summary>Notas técnicas</summary>
         <ul>
-          <li>El botón manda el evento <code>demo_inapp</code>; una automation responde con un in-app modal.</li>
-          <li>El plugin consulta despacio (cerca de una vez por minuto) hasta el primer mensaje; después pasa a tiempo real. Para la reunión conviene haberlo disparado una vez antes.</li>
+          <li>Lo dispara el mismo evento del banner, <code>demo_identificado</code>, que lleva <code>first_name</code> y <code>nivel</code>. Un solo mensaje decide la promoción con Liquid (<code>{% if event.nivel == "frecuente" %}</code>).</li>
+          <li>La automation espera 20 segundos antes de mostrarlo, para que no lo corte la recarga de la página.</li>
+          <li>El botón vuelve a esta página con <code>?uid=…&amp;producto=…&amp;utm_source=inapp</code>; la compra cuenta como conversión (<code>Order Completed</code> en 1 día).</li>
+          <li>El plugin consulta despacio (cerca de una vez por minuto) hasta el primer mensaje; después pasa a tiempo real. Para la reunión conviene haberse identificado una vez antes.</li>
         </ul>
       </details>
     </section>

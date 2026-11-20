@@ -80,15 +80,14 @@
 
     <section class="card">
       <p class="caps">Paso 4 · In-app</p>
-      <h2>"Responder en el momento, dentro de la web"</h2>
-      <figure><img src="assets/guia/4-inapp.png" alt="Modal in-app de Customer.io sobre la demo"></figure>
+      <h2>"Apenas sabe quién eres, te ofrece lo tuyo"</h2>
       <dl>
         <dt>Qué decir</dt>
-        <dd>Cualquier evento de la web puede disparar un mensaje en pantalla, sin tocar código: el marketing lo arma en Customer.io.</dd>
+        <dd>El mismo registro que cambió el banner dispara un mensaje dentro de la web con una promoción para su nivel: a los nuevos, 15% en la remera; a los frecuentes, 20% en el buzo y envío gratis. Es un solo mensaje que se arma con los datos del cliente, sin tocar código, y la compra que trae cuenta como conversión.</dd>
         <dt>Qué hacer</dt>
-        <dd>"Disparar el in-app": aparece un modal en unos segundos.</dd>
+        <dd>No hay botón: aparece solo después de identificarte en el paso 2, unos segundos después de que la página recarga. Tocá "Ver el buzo" (o "Ver la remera") y comprá el producto destacado.</dd>
         <dt>Qué mostrar en Customer.io</dt>
-        <dd>"Ver la automation ↗": el trigger por evento y el mensaje.</dd>
+        <dd>"Ver la automation ↗": el trigger <code>demo_identificado</code>, la espera de 20 segundos, el mensaje con las dos promociones y la conversión.</dd>
       </dl>
     </section>
 
@@ -122,7 +121,7 @@
       <h2>Si algo no aparece</h2>
       <ul>
         <li><strong>"Bloqueado" arriba a la derecha:</strong> bajá el bloqueador de anuncios y recargá.</li>
-        <li><strong>El in-app no llega:</strong> la primera vez en un navegador puede tardar un minuto. Mientras tanto, mostrá la automation en Customer.io.</li>
+        <li><strong>La promoción in-app no aparece:</strong> la primera vez en un navegador puede tardar un minuto. Mientras tanto, mostrá la automation en Customer.io.</li>
         <li><strong>El banner azul no aparece, o muestra datos de una prueba anterior:</strong> cerralo con la ✕ y recargá: los banners de identificaciones anteriores salen de a uno, el más viejo primero. Si repetís la demo, conviene usar otro email.</li>
         <li><strong>El WhatsApp no llega:</strong> revisá que el país de la bandera sea el del número. Meta no entrega plantillas de marketing a números de EE. UU. ni a quien recibió muchas hace poco: probá con tu número.</li>
         <li><strong>"Registration failed - push service error" al activar notificaciones:</strong> es Brave, que trae el push apagado. Activá "Use Google services for push messaging" en <code>brave://settings/privacy</code> y reiniciá Brave, o presentá desde Chrome.</li>

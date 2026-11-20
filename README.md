@@ -22,7 +22,7 @@ buzo), el atributo es el **nivel de cliente** (`nuevo` / `frecuente`) y el texto
 | 2 · Identificarse | `identify(id, {email, first_name, nivel})` + `track("demo_identificado")`, y recarga a los 15 s | Banner inline azul con nombre y nivel de cliente: automation 18 |
 | 3 · Email → web → conversión | `track("demo_email_solicitado", {nivel})` | Automation 19: rama por nivel (nuevo → email de la remera; frecuente → Experiment 1 de asunto sobre el email del buzo). El link vuelve a la web con `?uid=…&producto=…`; conversión `Order Completed` en 1 día |
 | 3 · Carrito abandonado | `track("Product Added", {product_id, name, price, quantity})` desde "Al carrito" (solo identificados) | Automation 23: espera 1 minuto y manda el email del producto; sale con `Order Completed`, que también es su conversión |
-| 4 · In-app | `track("demo_inapp")` | Modal: automation 17 |
+| 4 · In-app | Nada nuevo: lo dispara el `demo_identificado` del paso 2 | Automation 17: espera 20 s (que pase la recarga) y muestra un modal con la promoción del nivel (nuevo → 15% en la remera; frecuente → 20% en el buzo y envío gratis). El botón vuelve con `?uid=…&producto=…&utm_source=inapp`; conversión `Order Completed` en 1 día |
 | 5 · WhatsApp con GoChat | `identify` con `whatsapp` (dígitos) y `phone`; `track("demo_whatsapp_solicitado", {whatsapp, first_name, nivel, producto, producto_nombre})` | Automation 22: webhook al inbound webhook de GoChat, que crea el contacto, guarda `cio_id`, `nivel` y producto, y manda la plantilla. Conversión `Order Completed` en 1 día |
 | 6 · Web push | `webPush.subscribe()` (el navegador queda como dispositivo web en el perfil) y `track("demo_push")` | Automation 21: web push con el link a la automation |
 
@@ -67,7 +67,7 @@ permiso a una persona identificada y desde un clic.
 | Automation "Demo web · email por nivel con test de asunto" | 19 | Trigger `demo_email_solicitado`; rama True/False sobre la propiedad `nivel` del evento (`nuevo`); emails de Design Studio; conversión `Order Completed` en 1 día |
 | Experiment "Demo web · asunto del email del buzo" | 1 | 50/50 entre dos asuntos, conversión `Order Completed` en 1 día, ganador manual |
 | Automation "Demo web · carrito abandonado" | 23 | Trigger `Product Added` (cada evento entra), espera 1 minuto y manda el email de Design Studio (template 69) con `event.name`, `event.price` y el link `?uid=…&producto={{event.product_id}}`; condición de salida global `Order Completed`, que también es la conversión en 1 día |
-| Automation "Demo web · in-app" | 17 | Trigger `demo_inapp`, in-app modal |
+| Automation "Demo web · in-app con promo por nivel" | 17 | Trigger `demo_identificado`, espera 20 s, in-app modal (template 57) con un `{% if event.nivel == "frecuente" %}` que elige la promoción; conversión `Order Completed` en 1 día |
 | Automation "Demo web · WhatsApp por GoChat" | 22 | Trigger `demo_whatsapp_solicitado`; webhook `POST` al inbound webhook permanente de GoChat (`https://gochat.hyppo.io/api/iwh/…`, la URL está en el template 67) con teléfono, nombre, email, `cio_id`, nivel, producto y el sufijo del link; conversión `Order Completed` en 1 día |
 | Automation "Demo web · web push" | 21 | Trigger `demo_push`; push a la plataforma `web` (último navegador usado), template 68, con el link a la propia automation |
 

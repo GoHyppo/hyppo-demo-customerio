@@ -231,7 +231,7 @@ function setupUi() {
     // El banner lee nombre y nivel del evento: si los leyera del perfil, a veces Customer.io
     // arma el mensaje antes de guardar los atributos del identify y cae en los valores por defecto.
     const props = { first_name: traits.first_name || "", nivel: traits.nivel };
-    await send('track("demo_identificado")', cioanalytics.track("demo_identificado", props), props, { human: "Dispara el banner identificado" });
+    await send('track("demo_identificado")', cioanalytics.track("demo_identificado", props), props, { human: "Dispara el banner y la promoción de tu nivel" });
     // Un inline ocupa su lugar hasta que se cierra: el banner nuevo entra al recargar la página.
     reloadIn(15, "Customer.io está armando tu banner");
   });
@@ -284,9 +284,6 @@ function setupUi() {
     hint.textContent = `Listo: en unos segundos te llega un WhatsApp a +${traits.whatsapp}.`;
   });
 
-  $("#btn-inapp").addEventListener("click", (e) => {
-    send('track("demo_inapp")', cioanalytics.track("demo_inapp"), "La automation responde con un modal en unos segundos", { btn: e.currentTarget, human: "Llega un modal en unos segundos" });
-  });
 
 }
 
@@ -343,7 +340,7 @@ function handleEmailLanding() {
   const producto = params.get("producto");
   renderProducts(uid ? producto : null);
   if (!uid) return;
-  const canal = params.get("utm_source") === "whatsapp" ? "WhatsApp" : "el email";
+  const canal = { whatsapp: "WhatsApp", inapp: "el mensaje in-app" }[params.get("utm_source")] || "el email";
   send(`identify("${uid}")`, cioanalytics.identify(uid), { origen: `link de ${canal}`, utm_campaign: params.get("utm_campaign") });
   $("#from-email-canal").textContent = canal;
   $("#from-email-id").textContent = uid;
