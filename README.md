@@ -22,7 +22,7 @@ buzo), el atributo es el **nivel de cliente** (`nuevo` / `frecuente`) y el texto
 | 2 · Identificarse | `identify(id, {email, first_name, nivel})` + `track("demo_identificado")`, y recarga a los 15 s | Banner inline azul con nombre y nivel de cliente: automation 18 |
 | 3 · In-app | Nada nuevo: lo dispara el `demo_identificado` del paso 2 | Automation 17: espera 20 s (que pase la recarga) y muestra un modal con la promoción del nivel (nuevo → 15% en la remera; frecuente → 20% en el buzo y envío gratis). El botón vuelve con `?uid=…&producto=…&cupon=…&utm_source=inapp`; conversión `Order Completed` en 1 día |
 | 4 · Email → web → conversión | `track("demo_email_solicitado", {nivel})` | Automation 19: rama por nivel (nuevo → email de la remera; frecuente → Experiment 1 de asunto sobre el email del buzo). El link vuelve a la web con `?uid=…&producto=…`; conversión `Order Completed` en 1 día |
-| 4 · Carrito abandonado | `track("Product Added", {product_id, name, price, quantity})` desde "Al carrito" (solo identificados) | Automation 23: espera 1 minuto y manda el email del producto; sale con `Order Completed`, que también es su conversión |
+| 4 · Carrito abandonado | `track("Product Added", {product_id, name, price, quantity})` desde "Al carrito", también anónimo (se suma al perfil al identificarse, unos 4 minutos después, y dispara la automation si pasó en las últimas 72 h) | Automation 23: espera 1 minuto y manda el email del producto; sale con `Order Completed`, que también es su conversión |
 | 5 · WhatsApp con GoChat | `identify` con `whatsapp` (dígitos) y `phone`; `track("demo_whatsapp_solicitado", {whatsapp, first_name, nivel, producto, producto_nombre})` | Automation 22: webhook al inbound webhook de GoChat, que crea el contacto, guarda `cio_id`, `nivel` y producto, y manda la plantilla. Conversión `Order Completed` en 1 día |
 | 6 · Web push | `webPush.subscribe()` (el navegador queda como dispositivo web en el perfil) y `track("demo_push")` | Automation 21: web push con el link a la automation |
 
@@ -93,6 +93,10 @@ Lo que no es obvio:
   delivery). Por eso el banner usa solo `event.*`.
 - **En el href de un email de Design Studio va `&`, no `&amp;`**: el compilador escapa igual, y con
   `&amp;` el link trackeado llegaba con un parámetro `amp;producto`.
+- **Carrito anónimo, probado el 2026-11-20:** el `Product Added` anónimo tardó unos 4 minutos en sumarse
+  al perfil después del `identify`, y el email salió 1 minuto después. La salida por `Order Completed` solo
+  cuenta compras posteriores a entrar al journey (alguien que ya compró antes y agrega al carrito recibe el
+  email), salvo que la compra sea anónima y se sume junto con el carrito: ahí sale sin email.
 - Los broadcasts anónimos son de plan Premium o Enterprise, y el snippet necesita
   `anonymousInApp: true` en el plugin de in-app.
 - El email usa Arial: Gmail no carga fuentes web, así que Space Grotesk no se vería.

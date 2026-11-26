@@ -51,7 +51,7 @@
         <summary>Notas técnicas</summary>
         <ul>
           <li>"Comprar" manda <code>Order Completed</code> con <code>revenue</code>, el producto y, si llegaste con una promoción, <code>coupon</code> y <code>discount</code>. Es el objetivo de conversión de todas las automations de la demo.</li>
-          <li>Carrito abandonado: "Al carrito" manda <code>Product Added</code>. Otra automation espera 1 minuto y manda un email con ese producto; si en ese tiempo llega <code>Order Completed</code>, la persona sale del journey y el email no se envía. La compra cuenta como conversión.</li>
+          <li>Carrito abandonado: "Al carrito" manda <code>Product Added</code>, también sin identificarte: Customer.io guarda el evento con el <code>anonymousId</code> y lo suma al perfil cuando te identificas (si pasó en las últimas 72 horas, dispara la automation). Otra automation espera 1 minuto y manda un email con ese producto; si en ese tiempo llega <code>Order Completed</code>, la persona sale del journey y el email no se envía. La compra cuenta como conversión.</li>
         </ul>
       </details>
     </section>
