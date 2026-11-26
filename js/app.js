@@ -168,7 +168,7 @@ function blocked(btn, hint, msg) {
   setTimeout(() => delete btn.dataset.state, 2500);
 }
 
-// Avisos a la derecha cuando el panel está minimizado: hasta 3, cada uno se va solo a los 4 s.
+// Avisos a la derecha cuando el panel está minimizado: hasta 3, cada uno se va solo a los 10 s (que se alcance a leer mientras se presenta).
 function toast(label, human) {
   if (!document.body.classList.contains("log-closed")) return null;
   const box = $("#toasts");
@@ -179,7 +179,7 @@ function toast(label, human) {
   el.querySelector("span").textContent = human || "Enviado a Customer.io";
   box.prepend(el);
   while (box.children.length > 3) box.lastElementChild.remove();
-  el._timer = setTimeout(() => dismiss(el), 4000);
+  el._timer = setTimeout(() => dismiss(el), 10000);
   return el;
 }
 function toastError(el) {
@@ -295,7 +295,9 @@ function setupUi() {
     // El producto sigue la misma regla que el email: nuevo → remera; frecuente → buzo.
     const nivel = traits.nivel || "nuevo";
     const p = PRODUCTS.find((x) => x.id === (nivel === "nuevo" ? "remera-hyppo" : "buzo-hyppo"));
-    const props = { whatsapp: traits.whatsapp, first_name: traits.first_name || "", nivel, producto: p.id, producto_nombre: p.frase };
+    // Con el mismo cupón que el in-app del paso 3, así el precio no cambia según el canal por el que vuelve.
+    const cupon = nivel === "nuevo" ? "BIENVENIDA15" : "VUELVE20";
+    const props = { whatsapp: traits.whatsapp, first_name: traits.first_name || "", nivel, producto: p.id, producto_nombre: p.frase, cupon };
     send('track("demo_whatsapp_solicitado")', cioanalytics.track("demo_whatsapp_solicitado", props), props, { btn, human: `WhatsApp a +${traits.whatsapp} por GoChat` });
     hint.textContent = `Listo: en unos segundos te llega un WhatsApp a +${traits.whatsapp}.`;
   });

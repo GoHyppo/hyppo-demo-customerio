@@ -30,6 +30,7 @@
         <li>Abrí el panel de abajo a la derecha y tocá <strong>Empezar de nuevo</strong> para arrancar la reunión como visitante anónimo.</li>
         <li>Dejá Customer.io abierto y logueado en otra pestaña: los links "↗" de cada paso abren ahí.</li>
         <li>Tené a mano tu casilla de email para el paso 4.</li>
+        <li><strong>Para el push (paso 6), en macOS:</strong> Configuración del Sistema → Notificaciones → activá "Permitir notificaciones al duplicar o compartir la pantalla". Sin eso, macOS esconde el push mientras compartís pantalla en la reunión, aunque Customer.io lo haya enviado.</li>
       </ol>
       <p class="muted">La demo usa el workspace "Hyppo" (186015). Todo lo que pase en la reunión queda en ese workspace, con perfiles <code>demo-…</code>.</p>
     </section>
@@ -43,7 +44,7 @@
         <dt>Carrito abandonado</dt>
         <dd>La mejor versión arranca anónima: antes del paso 2, tocá "Al carrito" en el buzo y contá que Customer.io ya lo registró aunque no sabe quién es. Cuando te identificás, suma ese carrito al perfil y llega el email "Buzo Hyppo sigue en tu carrito": unos 5 minutos después, porque sumar la actividad anónima al perfil tarda unos 4 (ya identificado, llega al minuto). Seguí con los pasos mientras tanto. También funciona ya identificado. Para mostrar la salida, agregá la remera y comprala antes de que pase el minuto: en la automation se ve que la persona salió por conversión y el email no salió. La frase: "se frena solo si compra".</dd>
         <dt>Qué mostrar en Customer.io</dt>
-        <dd>"Ver el carrito abandonado ↗": la espera de 1 minuto, el email y la salida por compra.</dd>
+        <dd>"Ver el carrito abandonado ↗": la espera de 1 minuto y el email. La salida por compra no está en el dibujo del flujo: se abre con los tres puntos (⋮) de arriba a la derecha → <strong>Exit conditions</strong>, y dice "Order Completed". Es lo que responde a "¿y si ya compró?".</dd>
       </dl>
     </section>
 
@@ -86,7 +87,7 @@
         <dt>Qué hacer</dt>
         <dd>No hay botón: aparece solo después de identificarte en el paso 2, unos segundos después de que la página recarga. Tocá "Ver el buzo" (o "Ver la remera"): la web vuelve con el producto destacado y el precio con el cupón aplicado (USD 64 → 51,20 con VUELVE20). Comprá: la compra llega a Customer.io con el cupón y el descuento.</dd>
         <dt>Qué mostrar en Customer.io</dt>
-        <dd>"Ver la automation ↗": el trigger <code>demo_identificado</code>, la espera de 20 segundos, el mensaje con las dos promociones y la conversión. En el perfil, el evento <code>Order Completed</code> trae <code>coupon</code> y <code>discount</code>.</dd>
+        <dd>"Ver la automation ↗": el trigger <code>demo_identificado</code>, la espera de 20 segundos, el mensaje con las dos promociones y la conversión. En las métricas del mensaje, "abierto" es que el modal se mostró (no que lo clickearon): leé aperturas, clics y conversiones por separado. Una compra recién hecha tarda unos minutos en aparecer como conversión. En el perfil, el evento <code>Order Completed</code> trae <code>coupon</code> y <code>discount</code>.</dd>
       </dl>
     </section>
 
@@ -110,7 +111,7 @@
       <h2>"El mismo journey sigue por WhatsApp, y el agente sabe con quién habla"</h2>
       <dl>
         <dt>Qué decir</dt>
-        <dd>Es el día 2 de la historia de Sofía en la landing: Customer.io manda una plantilla de WhatsApp por GoChat con el producto que le corresponde. El botón vuelve a la web identificada y la compra cuenta como conversión. Si responde, el agente de IA ya tiene su nombre, su nivel y el producto, y lo que pasa en el chat vuelve al perfil.</dd>
+        <dd>Es el día 2 de la historia de Sofía en la landing: Customer.io manda una plantilla de WhatsApp por GoChat con el producto que le corresponde. El botón vuelve a la web identificada, con la misma promoción del in-app, y la compra cuenta como conversión. Si responde, el agente de IA ya tiene su nombre, su nivel y el producto, y lo que pasa en el chat vuelve al perfil.</dd>
         <dt>Qué hacer</dt>
         <dd>En el paso 2, pedile al cliente su WhatsApp o usá el tuyo: elegí el país en la bandera (arranca en el país de la compu) y escribí el número como lo dicta, la página lo valida y agrega el 9 de los celulares argentinos. Después identificate. Después "Envíame un WhatsApp": llega en unos segundos. Mostrá el botón "Ver producto" y respondé "Tengo una duda" para que conteste el agente.</dd>
         <dt>Qué mostrar en Customer.io</dt>
@@ -139,7 +140,7 @@
         <li><strong>El banner azul no aparece, o muestra datos de una prueba anterior:</strong> cerralo con la ✕ y recargá: los banners de identificaciones anteriores salen de a uno, el más viejo primero. Si repetís la demo, conviene usar otro email.</li>
         <li><strong>El WhatsApp no llega:</strong> revisá que el país de la bandera sea el del número. Meta no entrega plantillas de marketing a números de EE. UU. ni a quien recibió muchas hace poco: probá con tu número.</li>
         <li><strong>"Registration failed - push service error" al activar notificaciones:</strong> es Brave, que trae el push apagado. Activá "Use Google services for push messaging" en <code>brave://settings/privacy</code> y reiniciá Brave, o presentá desde Chrome.</li>
-        <li><strong>El push no llega:</strong> revisá que el navegador y el sistema operativo permitan notificaciones de Chrome (en macOS, Configuración del Sistema → Notificaciones) y que no esté activado No molestar. Si el permiso quedó bloqueado, habilitalo desde el candado de la barra de direcciones.</li>
+        <li><strong>El push no llega:</strong> revisá que el navegador y el sistema operativo permitan notificaciones de Chrome (en macOS, Configuración del Sistema → Notificaciones) y que no esté activado No molestar. Si estás compartiendo pantalla, revisá el punto del push en "Antes de la reunión": macOS lo esconde. Para saber si salió, el perfil en Customer.io muestra el push como enviado. Si el permiso quedó bloqueado, habilitalo desde el candado de la barra de direcciones.</li>
         <li><strong>El email no llega:</strong> buscalo en spam; el remitente es <code>hello@hyppo.io</code>.</li>
       </ul>
     </section>
